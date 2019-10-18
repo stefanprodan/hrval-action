@@ -12,3 +12,8 @@ spec:
   values:
     crd:
       create: true
+    prometheus:
+      install: true
+    rbac:
+      create: true
+      pspEnabled: true

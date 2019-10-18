@@ -1,12 +1,12 @@
 name: 'Validate Flux Helm Release'
-description: 'Github Action to Validate Flux Helm Release with kubeval'
+description: 'Github Action to validate Flux Helm Releases with kubeval'
 author: 'Stefan Prodan'
 branding:
   icon: 'check-square'
   color: 'blue'
 inputs:
   release:
-    description: 'The HelmRelease file path'
+    description: 'The HelmRelease YAML file path'
     required: true
   ignore-values:
     description: 'When set the HelmRelease values will be ignored'

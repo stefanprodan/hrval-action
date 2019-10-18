@@ -2,11 +2,14 @@
 
 ![CI](https://github.com/stefanprodan/hrval-action/workflows/CI/badge.svg)
 
-This GitHub actions validates a Flux 
+This GitHub action validates a Flux 
 [Helm Release](https://docs.fluxcd.io/projects/helm-operator/en/latest/references/helmrelease-custom-resource.html)
-Kubernetes custom resource with [kubeval](https://github.com/instrumenta/kubeval):
+Kubernetes custom resource with [kubeval](https://github.com/instrumenta/kubeval).
+
+Steps:
+* extracts the chart source with yq
 * downloads the chart from the Helm or Git repository
-* extracts the Helm Release values
+* extracts the Helm Release values with yq
 * runs helm template for the extracted values
 * validates the YAMLs using kubeval strict mode
 
@@ -25,12 +28,35 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - name: Validate Helm Release from Helm Repo
-        uses: stefanprodan/hrval-action@master
+        uses: stefanprodan/hrval-action@v1.0.0
         with:
           release: test/flagger.yaml
       - name: Validate Helm Release from Git Repo
-        uses: stefanprodan/hrval-action@master
+        uses: stefanprodan/hrval-action@v1.0.0
         with:
           release: test/podinfo.yaml
           ignore-values: true
+```
+
+Output:
+
+```text
+Processing test/flagger.yaml
+Downloading to /tmp/tmp.TuA4QzCOG7
+Extracting values to /tmp/tmp.TuA4QzCOG7/flagger.values.yaml
+Writing Helm release to /tmp/tmp.TuA4QzCOG7/flagger.release.yaml
+Validating Helm release flagger.flagger-system
+WARN - Set to ignore missing schemas
+PASS - flagger/templates/account.yaml contains a valid ServiceAccount
+WARN - flagger/templates/crd.yaml containing a CustomResourceDefinition was not validated against a schema
+PASS - flagger/templates/prometheus.yaml contains a valid ClusterRole
+PASS - flagger/templates/prometheus.yaml contains a valid ClusterRoleBinding
+PASS - flagger/templates/prometheus.yaml contains a valid ServiceAccount
+PASS - flagger/templates/prometheus.yaml contains a valid ConfigMap
+PASS - flagger/templates/prometheus.yaml contains a valid Deployment
+PASS - flagger/templates/prometheus.yaml contains a valid Service
+PASS - flagger/templates/rbac.yaml contains a valid ClusterRole
+PASS - flagger/templates/rbac.yaml contains a valid ClusterRoleBinding
+PASS - flagger/templates/deployment.yaml contains a valid Deployment
+PASS - flagger/templates/psp.yaml contains an empty YAML document
 ```
