@@ -7,6 +7,7 @@ This GitHub action validates a Flux
 Kubernetes custom resource with [kubeval](https://github.com/instrumenta/kubeval).
 
 Steps:
+* installs kubectl, helm, yq and kubeval
 * extracts the chart source with yq
 * downloads the chart from the Helm or Git repository
 * extracts the Helm Release values with yq
@@ -47,6 +48,9 @@ Extracting values to /tmp/tmp.TuA4QzCOG7/flagger.values.yaml
 Writing Helm release to /tmp/tmp.TuA4QzCOG7/flagger.release.yaml
 Validating Helm release flagger.flagger-system
 WARN - Set to ignore missing schemas
+PASS - flagger/templates/psp.yaml contains a valid PodSecurityPolicy
+PASS - flagger/templates/psp.yaml contains a valid ClusterRole
+PASS - flagger/templates/psp.yaml contains a valid RoleBinding
 PASS - flagger/templates/account.yaml contains a valid ServiceAccount
 WARN - flagger/templates/crd.yaml containing a CustomResourceDefinition was not validated against a schema
 PASS - flagger/templates/prometheus.yaml contains a valid ClusterRole
@@ -58,5 +62,4 @@ PASS - flagger/templates/prometheus.yaml contains a valid Service
 PASS - flagger/templates/rbac.yaml contains a valid ClusterRole
 PASS - flagger/templates/rbac.yaml contains a valid ClusterRoleBinding
 PASS - flagger/templates/deployment.yaml contains a valid Deployment
-PASS - flagger/templates/psp.yaml contains an empty YAML document
 ```
