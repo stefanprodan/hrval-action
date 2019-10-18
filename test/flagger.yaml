@@ -1,0 +1,14 @@
+apiVersion: helm.fluxcd.io/v1
+kind: HelmRelease
+metadata:
+  name: flagger
+  namespace: flagger-system
+spec:
+  releaseName: flagger
+  chart:
+    repository: https://flagger.app
+    name: flagger
+    version: 0.19.0
+  values:
+    crd:
+      create: true

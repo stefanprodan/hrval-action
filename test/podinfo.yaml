@@ -1,0 +1,23 @@
+apiVersion: helm.fluxcd.io/v1
+kind: HelmRelease
+metadata:
+  name: podinfo
+  namespace: demo
+spec:
+  releaseName: podinfo
+  chart:
+    git: https://github.com/stefanprodan/podinfo
+    ref: 3.0.0
+    path: charts/podinfo
+  values:
+    hpa:
+      enabled: true
+      maxReplicas: 10
+      cpu: 90
+      memory: 200Mi
+    ingress:
+      enabled: true
+      annotations:
+       kubernetes.io/ingress.class: nginx
+      path: /*
+      hosts: []
