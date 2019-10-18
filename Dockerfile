@@ -1,8 +1,9 @@
 FROM golang:1.13
 
-COPY LICENSE README.md entrypoint.sh /
-COPY ./src/hrval.sh /hrval.sh
+COPY LICENSE README.md /
+COPY src/ /
+RUN /deps.sh
 
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["/hrval.sh"]
 
 

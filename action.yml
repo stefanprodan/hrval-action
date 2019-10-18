@@ -2,10 +2,14 @@ name: 'Validate Flux Helm Release'
 description: 'Github Action to Validate Flux Helm Release with kubeval'
 author: 'Stefan Prodan'
 inputs:
-  HELM_RELEASE:
+  release:
     description: 'The HelmRelease file path'
-  IGNORE_VALUES:
+    required: true
+  ignore-values:
     description: 'When set the HelmRelease values will be ignored'
 runs:
   using: 'docker'
   image: 'Dockerfile'
+  args:
+    - ${{ inputs.release }}
+    - ${{ inputs.ignore-values }}

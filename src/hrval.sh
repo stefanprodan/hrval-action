@@ -2,8 +2,8 @@
 
 set -o errexit
 
-HELM_RELEASE=${HELM_RELEASE}
-IGNORE_VALUES=${IGNORE_VALUES}
+HELM_RELEASE=${1}
+IGNORE_VALUES=${2}
 
 if test ! -f "${HELM_RELEASE}"; then
   echo "\"${HELM_RELEASE}\" file not found!"

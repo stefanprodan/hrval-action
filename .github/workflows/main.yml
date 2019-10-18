@@ -1,0 +1,17 @@
+name: CI
+
+on: [push]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Validate Helm Release from Helm Repo
+        uses: stefanprodan/hrval-action@master
+        with:
+          release: test/flagger.yaml
+      - name: Validate Helm Release from Git Repo
+        uses: stefanprodan/hrval-action@master
+        with:
+          release: test/podinfo.yaml
