@@ -7,7 +7,7 @@ This GitHub action validates a Flux
 Kubernetes custom resource with [kubeval](https://github.com/instrumenta/kubeval).
 
 Steps:
-* installs kubectl, helm, yq and kubeval
+* installs kubectl, yq, kubeval, helm v2 and v3
 * extracts the chart source with yq
 * downloads the chart from the Helm or Git repository
 * extracts the Helm Release values with yq
@@ -21,7 +21,7 @@ Validate Helm release custom resources:
 ```yaml
 name: CI
 
-on: [push]
+on: [push, pull_request]
 
 jobs:
   hrval:
@@ -29,14 +29,17 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - name: Validate Helm Release from Helm Repo
-        uses: stefanprodan/hrval-action@v2.0.0
+        uses: stefanprodan/hrval-action@v2.1.0
         with:
           helmRelease: test/flagger.yaml
+          helmVersion: v2
           kubernetesVersion: 1.16.0
       - name: Validate Helm Release from Git Repo
-        uses: stefanprodan/hrval-action@v2.0.0
+        uses: stefanprodan/hrval-action@v2.1.0
         with:
           helmRelease: test/podinfo.yaml
+          helmVersion: v3
+          kubernetesVersion: master
           ignoreValues: true
 ```
 
