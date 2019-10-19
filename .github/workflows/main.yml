@@ -8,10 +8,16 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - name: Validate Helm Release from Helm Repo
-        uses: stefanprodan/hrval-action@v1.0.0
+        uses: stefanprodan/hrval-action@kube-version
         with:
-          release: test/flagger.yaml
+          helmRelease: test/flagger.yaml
+          kubernetesVersion: 1.16.0
       - name: Validate Helm Release from Git Repo
-        uses: stefanprodan/hrval-action@v1.0.0
+        uses: stefanprodan/hrval-action@kube-version
         with:
-          release: test/podinfo.yaml
+          helmRelease: test/podinfo.yaml
+      - name: Validate Helm Release without values
+        uses: stefanprodan/hrval-action@kube-version
+        with:
+          helmRelease: test/podinfo.yaml
+          ignoreValues: true

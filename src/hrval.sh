@@ -4,9 +4,9 @@ set -o errexit
 
 HELM_RELEASE=${1}
 IGNORE_VALUES=${2}
-
+KUBE_VER=${3-master}
 if test ! -f "${HELM_RELEASE}"; then
-  echo "\"${HELM_RELEASE}\" file not found!"
+  echo "\"${HELM_RELEASE}\" Helm release file not found!"
   exit 1
 fi
 
@@ -78,8 +78,8 @@ function validate {
   --namespace ${HELM_RELEASE_NAMESPACE} \
   -f ${TMPDIR}/${HELM_RELEASE_NAME}.values.yaml > ${TMPDIR}/${HELM_RELEASE_NAME}.release.yaml
 
-  echo "Validating Helm release ${HELM_RELEASE_NAME}.${HELM_RELEASE_NAMESPACE}"
-  kubeval --strict --ignore-missing-schemas ${TMPDIR}/${HELM_RELEASE_NAME}.release.yaml
+  echo "Validating Helm release ${HELM_RELEASE_NAME}.${HELM_RELEASE_NAMESPACE} against Kubernetes ${KUBE_VER}"
+  kubeval --strict --ignore-missing-schemas --kubernetes-version ${KUBE_VER} ${TMPDIR}/${HELM_RELEASE_NAME}.release.yaml
 }
 
 validate
