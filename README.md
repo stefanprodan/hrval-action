@@ -29,12 +29,12 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - name: Validate Helm Release from Helm Repo
-        uses: stefanprodan/hrval-action@v1.0.0
+        uses: stefanprodan/hrval-action@v2.0.0
         with:
           helmRelease: test/flagger.yaml
           kubernetesVersion: 1.16.0
       - name: Validate Helm Release from Git Repo
-        uses: stefanprodan/hrval-action@v1.0.0
+        uses: stefanprodan/hrval-action@v2.0.0
         with:
           helmRelease: test/podinfo.yaml
           ignoreValues: true
