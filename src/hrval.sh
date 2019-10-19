@@ -12,6 +12,14 @@ fi
 
 echo "Processing ${HELM_RELEASE}"
 
+function isHelmRelease {
+    KIND=$(yq r ${1} kind)
+    if [ ${KIND} = "HelmRelease" ]; then
+        echo true
+    fi
+    echo false
+}
+
 function download {
   CHART_REPO=$(yq r ${1} spec.chart.repository)
   CHART_NAME=$(yq r ${1} spec.chart.name)
@@ -37,6 +45,11 @@ function clone {
 }
 
 function validate {
+  if [ $(isHelmRelease ${HELM_RELEASE}) != "true" ]; then
+    echo "\"${HELM_RELEASE}\" is not of kind HelmRelease!"
+    exit 1
+  fi
+
   TMPDIR=$(mktemp -d)
   CHART_PATH=$(yq r ${HELM_RELEASE} spec.chart.path)
 
@@ -51,10 +64,11 @@ function validate {
   HELM_RELEASE_NAME=$(yq r ${HELM_RELEASE} metadata.name)
   HELM_RELEASE_NAMESPACE=$(yq r ${HELM_RELEASE} metadata.namespace)
 
-  echo "Extracting values to ${TMPDIR}/${HELM_RELEASE_NAME}.values.yaml"
-  if [ ${IGNORE_VALUES} ]; then
+  if [ ${IGNORE_VALUES} = "true" ]; then
+    echo "Ingnoring Helm release values"
     echo "" > ${TMPDIR}/${HELM_RELEASE_NAME}.values.yaml
   else
+    echo "Extracting values to ${TMPDIR}/${HELM_RELEASE_NAME}.values.yaml"
     yq r ${HELM_RELEASE} spec.values > ${TMPDIR}/${HELM_RELEASE_NAME}.values.yaml
   fi
 
