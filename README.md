@@ -67,3 +67,36 @@ PASS - flagger/templates/rbac.yaml contains a valid ClusterRole
 PASS - flagger/templates/rbac.yaml contains a valid ClusterRoleBinding
 PASS - flagger/templates/deployment.yaml contains a valid Deployment
 ```
+
+## CI alternatives
+
+The validation script can be used in any CI system. 
+
+CircleCI example:
+
+```yaml
+version: 2.1
+jobs:
+  hrval:
+    docker:
+      - image: circleci/golang:1.13
+    steps:
+      - checkout
+      - run:
+          name: Install hrval deps
+          command: |
+            curl -sL https://raw.githubusercontent.com/stefanprodan/hrval-action/master/src/deps.sh | sudo bash
+      - run:
+          name: Install hrval
+          command: |
+            sudo curl -sL https://raw.githubusercontent.com/stefanprodan/hrval-action/master/src/hrval.sh \
+              -o /usr/local/bin/hrval && sudo chmod +x /usr/local/bin/hrval
+      - run:
+          name: Validate Helm Release
+          command: |
+            IGNORE_VALUES=false
+            KUBE_VER=master
+            HELM_VER=v2
+
+            hrval test/podinfo.yaml $IGNORE_VALUES $KUBE_VER $HELM_VER
+```
