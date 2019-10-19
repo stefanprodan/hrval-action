@@ -8,6 +8,6 @@ curl -sL https://github.com/instrumenta/kubeval/releases/latest/download/kubeval
 
 curl -sL https://github.com/mikefarah/yq/releases/download/2.4.0/yq_linux_amd64 -o /usr/local/bin/yq && chmod +x /usr/local/bin/yq
 
-curl -sL https://storage.googleapis.com/kubernetes-helm/helm-v2.14.3-linux-amd64.tar.gz | tar xz && mv linux-amd64/helm /bin/helm && rm -rf linux-amd64
+curl -sL https://storage.googleapis.com/kubernetes-helm/helm-v2.15.0-linux-amd64.tar.gz | tar xz && mv linux-amd64/helm /bin/helm && rm -rf linux-amd64
 
 helm init --client-only --kubeconfig=$HOME/.kube/kubeconfig
