@@ -12,10 +12,12 @@ jobs:
         with:
           helmRelease: test/flagger.yaml
           kubernetesVersion: 1.16.0
+          helmVersion: v2
       - name: Validate Helm Release from Git Repo
         uses: ./
         with:
           helmRelease: test/podinfo.yaml
+          helmVersion: v3
       - name: Validate Helm Release without values
         uses: ./
         with:

@@ -14,6 +14,9 @@ inputs:
   kubernetesVersion:
     description: 'Version of Kubernetes to validate against'
     default: 'master'
+  helmVersion:
+    description: 'Version of Helm to validate against'
+    default: 'v2'
 
 runs:
   using: 'docker'
@@ -22,3 +25,4 @@ runs:
     - ${{ inputs.helmRelease }}
     - ${{ inputs.ignoreValues }}
     - ${{ inputs.kubernetesVersion }}
+    - ${{ inputs.helmVersion }}

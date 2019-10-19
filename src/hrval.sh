@@ -5,6 +5,8 @@ set -o errexit
 HELM_RELEASE=${1}
 IGNORE_VALUES=${2}
 KUBE_VER=${3-master}
+HELM_VER=${4-v2}
+
 if test ! -f "${HELM_RELEASE}"; then
   echo "\"${HELM_RELEASE}\" Helm release file not found!"
   exit 1
@@ -64,7 +66,7 @@ function validate {
   HELM_RELEASE_NAME=$(yq r ${HELM_RELEASE} metadata.name)
   HELM_RELEASE_NAMESPACE=$(yq r ${HELM_RELEASE} metadata.namespace)
 
-  if [[ ${IGNORE_VALUES} = "true" ]]; then
+  if [[ ${IGNORE_VALUES} == "true" ]]; then
     echo "Ingnoring Helm release values"
     echo "" > ${TMPDIR}/${HELM_RELEASE_NAME}.values.yaml
   else
@@ -73,10 +75,17 @@ function validate {
   fi
 
   echo "Writing Helm release to ${TMPDIR}/${HELM_RELEASE_NAME}.release.yaml"
-  helm template ${CHART_TAR} \
-  --name ${HELM_RELEASE_NAME} \
-  --namespace ${HELM_RELEASE_NAMESPACE} \
-  -f ${TMPDIR}/${HELM_RELEASE_NAME}.values.yaml > ${TMPDIR}/${HELM_RELEASE_NAME}.release.yaml
+  if [[ ${HELM_VER} == "v3" ]]; then
+    helmv3 template ${HELM_RELEASE_NAME} ${CHART_TAR} \
+      --namespace ${HELM_RELEASE_NAMESPACE} \
+      --skip-crds=true \
+      -f ${TMPDIR}/${HELM_RELEASE_NAME}.values.yaml > ${TMPDIR}/${HELM_RELEASE_NAME}.release.yaml
+  else
+    helm template ${CHART_TAR} \
+      --name ${HELM_RELEASE_NAME} \
+      --namespace ${HELM_RELEASE_NAMESPACE} \
+      -f ${TMPDIR}/${HELM_RELEASE_NAME}.values.yaml > ${TMPDIR}/${HELM_RELEASE_NAME}.release.yaml
+  fi
 
   echo "Validating Helm release ${HELM_RELEASE_NAME}.${HELM_RELEASE_NAMESPACE} against Kubernetes ${KUBE_VER}"
   kubeval --strict --ignore-missing-schemas --kubernetes-version ${KUBE_VER} ${TMPDIR}/${HELM_RELEASE_NAME}.release.yaml
