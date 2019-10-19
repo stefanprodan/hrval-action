@@ -4,13 +4,21 @@ set -o errexit
 
 HELM_RELEASE=${1}
 IGNORE_VALUES=${2}
-
+KUBE_VER=${3-master}
 if test ! -f "${HELM_RELEASE}"; then
-  echo "\"${HELM_RELEASE}\" file not found!"
+  echo "\"${HELM_RELEASE}\" Helm release file not found!"
   exit 1
 fi
 
 echo "Processing ${HELM_RELEASE}"
+
+function isHelmRelease {
+    KIND=$(yq r ${1} kind)
+    if [[ ${KIND} = "HelmRelease" ]]; then
+        echo true
+    fi
+    echo false
+}
 
 function download {
   CHART_REPO=$(yq r ${1} spec.chart.repository)
@@ -37,10 +45,15 @@ function clone {
 }
 
 function validate {
+  if [[ $(isHelmRelease ${HELM_RELEASE}) == "false" ]]; then
+    echo "\"${HELM_RELEASE}\" is not of kind HelmRelease!"
+    exit 1
+  fi
+
   TMPDIR=$(mktemp -d)
   CHART_PATH=$(yq r ${HELM_RELEASE} spec.chart.path)
 
-  if [ "${CHART_PATH}" == "null" ]; then
+  if [[ "${CHART_PATH}" == "null" ]]; then
     echo "Downloading to ${TMPDIR}"
     CHART_TAR=$(download ${HELM_RELEASE} ${TMPDIR}| tail -n1)
   else
@@ -51,10 +64,11 @@ function validate {
   HELM_RELEASE_NAME=$(yq r ${HELM_RELEASE} metadata.name)
   HELM_RELEASE_NAMESPACE=$(yq r ${HELM_RELEASE} metadata.namespace)
 
-  echo "Extracting values to ${TMPDIR}/${HELM_RELEASE_NAME}.values.yaml"
-  if [ ${IGNORE_VALUES} ]; then
+  if [[ ${IGNORE_VALUES} = "true" ]]; then
+    echo "Ingnoring Helm release values"
     echo "" > ${TMPDIR}/${HELM_RELEASE_NAME}.values.yaml
   else
+    echo "Extracting values to ${TMPDIR}/${HELM_RELEASE_NAME}.values.yaml"
     yq r ${HELM_RELEASE} spec.values > ${TMPDIR}/${HELM_RELEASE_NAME}.values.yaml
   fi
 
@@ -64,8 +78,8 @@ function validate {
   --namespace ${HELM_RELEASE_NAMESPACE} \
   -f ${TMPDIR}/${HELM_RELEASE_NAME}.values.yaml > ${TMPDIR}/${HELM_RELEASE_NAME}.release.yaml
 
-  echo "Validating Helm release ${HELM_RELEASE_NAME}.${HELM_RELEASE_NAMESPACE}"
-  kubeval --strict --ignore-missing-schemas ${TMPDIR}/${HELM_RELEASE_NAME}.release.yaml
+  echo "Validating Helm release ${HELM_RELEASE_NAME}.${HELM_RELEASE_NAMESPACE} against Kubernetes ${KUBE_VER}"
+  kubeval --strict --ignore-missing-schemas --kubernetes-version ${KUBE_VER} ${TMPDIR}/${HELM_RELEASE_NAME}.release.yaml
 }
 
 validate

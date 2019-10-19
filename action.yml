@@ -5,14 +5,20 @@ branding:
   icon: 'check-square'
   color: 'blue'
 inputs:
-  release:
+  helmRelease:
     description: 'The HelmRelease YAML file path'
     required: true
-  ignore-values:
-    description: 'When set the HelmRelease values will be ignored'
+  ignoreValues:
+    description: 'When set to true HelmRelease values will be ignored'
+    default: 'false'
+  kubernetesVersion:
+    description: 'Version of Kubernetes to validate against'
+    default: 'master'
+
 runs:
   using: 'docker'
   image: 'Dockerfile'
   args:
-    - ${{ inputs.release }}
-    - ${{ inputs.ignore-values }}
+    - ${{ inputs.helmRelease }}
+    - ${{ inputs.ignoreValues }}
+    - ${{ inputs.kubernetesVersion }}

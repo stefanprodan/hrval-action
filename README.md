@@ -29,14 +29,15 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - name: Validate Helm Release from Helm Repo
-        uses: stefanprodan/hrval-action@v1.0.0
+        uses: stefanprodan/hrval-action@v2.0.0
         with:
-          release: test/flagger.yaml
+          helmRelease: test/flagger.yaml
+          kubernetesVersion: 1.16.0
       - name: Validate Helm Release from Git Repo
-        uses: stefanprodan/hrval-action@v1.0.0
+        uses: stefanprodan/hrval-action@v2.0.0
         with:
-          release: test/podinfo.yaml
-          ignore-values: true
+          helmRelease: test/podinfo.yaml
+          ignoreValues: true
 ```
 
 Output:
@@ -46,7 +47,7 @@ Processing test/flagger.yaml
 Downloading to /tmp/tmp.TuA4QzCOG7
 Extracting values to /tmp/tmp.TuA4QzCOG7/flagger.values.yaml
 Writing Helm release to /tmp/tmp.TuA4QzCOG7/flagger.release.yaml
-Validating Helm release flagger.flagger-system
+Validating Helm release flagger.flagger-system against Kubernetes 1.16.0
 WARN - Set to ignore missing schemas
 PASS - flagger/templates/psp.yaml contains a valid PodSecurityPolicy
 PASS - flagger/templates/psp.yaml contains a valid ClusterRole

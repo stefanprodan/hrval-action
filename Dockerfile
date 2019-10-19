@@ -5,5 +5,3 @@ COPY src/ /
 RUN /deps.sh
 
 ENTRYPOINT ["/hrval.sh"]
-
-
