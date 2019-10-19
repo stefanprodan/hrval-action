@@ -3,21 +3,21 @@ name: CI
 on: [push]
 
 jobs:
-  test:
+  test-action:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
       - name: Validate Helm Release from Helm Repo
-        uses: stefanprodan/hrval-action@kube-version
+        uses: ./
         with:
           helmRelease: test/flagger.yaml
           kubernetesVersion: 1.16.0
       - name: Validate Helm Release from Git Repo
-        uses: stefanprodan/hrval-action@kube-version
+        uses: ./
         with:
           helmRelease: test/podinfo.yaml
       - name: Validate Helm Release without values
-        uses: stefanprodan/hrval-action@kube-version
+        uses: ./
         with:
           helmRelease: test/podinfo.yaml
           ignoreValues: true
