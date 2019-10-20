@@ -1,0 +1,24 @@
+---
+apiVersion: helm.fluxcd.io/v1
+kind: HelmRelease
+metadata:
+  name: ghost
+  namespace: demo
+spec:
+  releaseName: ghost
+  chart:
+    git: https://github.com/fluxcd/flux-get-started
+    ref: master
+    path: charts/ghost
+  values:
+    image: bitnami/ghost:1.21.5-r0
+    persistence:
+      enabled: false
+    resources:
+      requests:
+        memory: 32Mi
+        cpu: 10m
+    serviceType: ClusterIP
+    mariadb:
+      persistence:
+        enabled: false

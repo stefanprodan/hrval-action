@@ -8,6 +8,10 @@ KUBE_VER=${3-master}
 HELM_VER=${4-v2}
 HRVAL="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )/hrval.sh"
 
+if [[ ${HELM_VER} == "v2" ]]; then
+    helm init --client-only
+fi
+
 if test -f "${DIR}"; then
   ${HRVAL} ${DIR} ${IGNORE_VALUES} ${KUBE_VER} ${HELM_VER}
   exit 0
