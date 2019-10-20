@@ -4,7 +4,7 @@
 
 This GitHub action validates a Flux 
 [Helm Release](https://docs.fluxcd.io/projects/helm-operator/en/latest/references/helmrelease-custom-resource.html)
-Kubernetes custom resource with [kubeval](https://github.com/instrumenta/kubeval).
+Kubernetes custom resources with [kubeval](https://github.com/instrumenta/kubeval).
 
 Steps:
 * installs kubectl, yq, kubeval, helm v2 and v3
@@ -28,14 +28,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
+      - name: Validate Helm Releases in test dir
+        uses: stefanprodan/hrval-action@v2.2.0
+        with:
+          helmRelease: test/
       - name: Validate Helm Release from Helm Repo
-        uses: stefanprodan/hrval-action@v2.1.0
+        uses: stefanprodan/hrval-action@v2.2.0
         with:
           helmRelease: test/flagger.yaml
           helmVersion: v2
           kubernetesVersion: 1.16.0
       - name: Validate Helm Release from Git Repo
-        uses: stefanprodan/hrval-action@v2.1.0
+        uses: stefanprodan/hrval-action@v2.2.0
         with:
           helmRelease: test/podinfo.yaml
           helmVersion: v3
@@ -70,7 +74,7 @@ PASS - flagger/templates/deployment.yaml contains a valid Deployment
 
 ## CI alternatives
 
-The validation script can be used in any CI system. 
+The validation scripts can be used in any CI system. 
 
 CircleCI example:
 
@@ -83,20 +87,19 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Install hrval deps
-          command: |
-            curl -sL https://raw.githubusercontent.com/stefanprodan/hrval-action/master/src/deps.sh | sudo bash
-      - run:
           name: Install hrval
           command: |
+            curl -sL https://raw.githubusercontent.com/stefanprodan/hrval-action/master/src/deps.sh | sudo bash
             sudo curl -sL https://raw.githubusercontent.com/stefanprodan/hrval-action/master/src/hrval.sh \
+              -o /usr/local/bin/hrval.sh && sudo chmod +x /usr/local/bin/hrval.sh
+            sudo curl -sL https://raw.githubusercontent.com/stefanprodan/hrval-action/master/src/hrval-all.sh \
               -o /usr/local/bin/hrval && sudo chmod +x /usr/local/bin/hrval
       - run:
-          name: Validate Helm Release
+          name: Validate Helm Releases in test dir
           command: |
             IGNORE_VALUES=false
             KUBE_VER=master
             HELM_VER=v2
 
-            hrval test/podinfo.yaml $IGNORE_VALUES $KUBE_VER $HELM_VER
+            hrval test/ $IGNORE_VALUES $KUBE_VER $HELM_VER
 ```

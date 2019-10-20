@@ -1,4 +1,4 @@
-name: 'Validate Flux Helm Release'
+name: 'Validate Flux Helm Releases'
 description: 'Github Action to validate Flux Helm Releases with kubeval'
 author: 'Stefan Prodan'
 branding:
@@ -6,7 +6,7 @@ branding:
   color: 'blue'
 inputs:
   helmRelease:
-    description: 'The HelmRelease YAML file path'
+    description: 'The HelmRelease YAML file path or dir'
     required: true
   ignoreValues:
     description: 'When set to true HelmRelease values will be ignored'

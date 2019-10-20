@@ -23,3 +23,11 @@ jobs:
         with:
           helmRelease: test/podinfo.yaml
           ignoreValues: true
+  test-dir:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Validate all Helm Releases in the test dir
+        uses: ./
+        with:
+          helmRelease: test/
