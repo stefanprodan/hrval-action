@@ -15,11 +15,12 @@ fi
 echo "Processing ${HELM_RELEASE}"
 
 function isHelmRelease {
-    KIND=$(yq r ${1} kind)
-    if [[ ${KIND} = "HelmRelease" ]]; then
-        echo true
-    fi
+  KIND=$(yq r ${1} kind)
+  if [[ ${KIND} == "HelmRelease" ]]; then
+      echo true
+  else
     echo false
+  fi
 }
 
 function download {
