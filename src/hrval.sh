@@ -27,10 +27,10 @@ function download {
   CHART_REPO=$(yq r ${1} spec.chart.repository)
   CHART_NAME=$(yq r ${1} spec.chart.name)
   CHART_VERSION=$(yq r ${1} spec.chart.version)
-  CHART_TAR="${2}/${CHART_NAME}-${CHART_VERSION}.tgz"
-  URL=$(echo ${CHART_REPO} | sed "s/^\///;s/\/$//")
-  curl -s ${URL}/${CHART_NAME}-${CHART_VERSION}.tgz > ${CHART_TAR}
-  echo ${CHART_TAR}
+  CHART_DIR=${2}/${CHART_NAME}
+  helm repo add ${CHART_NAME} ${CHART_REPO}
+  helm fetch --version ${CHART_VERSION} --untar ${CHART_NAME}/${CHART_NAME} --untardir ${2}
+  echo ${CHART_DIR}
 }
 
 function clone {
@@ -58,10 +58,10 @@ function validate {
 
   if [[ "${CHART_PATH}" == "null" ]]; then
     echo "Downloading to ${TMPDIR}"
-    CHART_TAR=$(download ${HELM_RELEASE} ${TMPDIR}| tail -n1)
+    CHART_DIR=$(download ${HELM_RELEASE} ${TMPDIR}| tail -n1)
   else
     echo "Cloning to ${TMPDIR}"
-    CHART_TAR=$(clone ${HELM_RELEASE} ${TMPDIR}| tail -n1)
+    CHART_DIR=$(clone ${HELM_RELEASE} ${TMPDIR}| tail -n1)
   fi
 
   HELM_RELEASE_NAME=$(yq r ${HELM_RELEASE} metadata.name)
@@ -79,17 +79,17 @@ function validate {
   if [[ ${HELM_VER} == "v3" ]]; then
     # Helm v3 bug: https://github.com/helm/helm/issues/6416
 #    if [[ "${CHART_PATH}" != "null" ]]; then
-#      helmv3 dependency build ${CHART_TAR}
+#      helmv3 dependency build ${CHART_DIR}
 #    fi
-    helmv3 template ${HELM_RELEASE_NAME} ${CHART_TAR} \
+    helmv3 template ${HELM_RELEASE_NAME} ${CHART_DIR} \
       --namespace ${HELM_RELEASE_NAMESPACE} \
       --skip-crds=true \
       -f ${TMPDIR}/${HELM_RELEASE_NAME}.values.yaml > ${TMPDIR}/${HELM_RELEASE_NAME}.release.yaml
   else
     if [[ "${CHART_PATH}" != "null" ]]; then
-      helm dependency build ${CHART_TAR}
+      helm dependency build ${CHART_DIR}
     fi
-    helm template ${CHART_TAR} \
+    helm template ${CHART_DIR} \
       --name ${HELM_RELEASE_NAME} \
       --namespace ${HELM_RELEASE_NAMESPACE} \
       -f ${TMPDIR}/${HELM_RELEASE_NAME}.values.yaml > ${TMPDIR}/${HELM_RELEASE_NAME}.release.yaml
