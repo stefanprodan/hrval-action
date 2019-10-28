@@ -30,17 +30,17 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - name: Validate Helm Releases in test dir
-        uses: stefanprodan/hrval-action@v2.4.0
+        uses: stefanprodan/hrval-action@v2.6.0
         with:
           helmRelease: test/
       - name: Validate Helm Release from Helm Repo
-        uses: stefanprodan/hrval-action@v2.4.0
+        uses: stefanprodan/hrval-action@v2.6.0
         with:
           helmRelease: test/flagger.yaml
           helmVersion: v2
           kubernetesVersion: 1.16.0
       - name: Validate Helm Release from Git Repo
-        uses: stefanprodan/hrval-action@v2.4.0
+        uses: stefanprodan/hrval-action@v2.6.0
         with:
           helmRelease: test/podinfo.yaml
           helmVersion: v3
@@ -84,17 +84,9 @@ version: 2.1
 jobs:
   hrval:
     docker:
-      - image: circleci/golang:1.13
+      - image: stefanprodan/hrval
     steps:
       - checkout
-      - run:
-          name: Install hrval
-          command: |
-            curl -sL https://raw.githubusercontent.com/stefanprodan/hrval-action/master/src/deps.sh | sudo bash
-            sudo curl -sL https://raw.githubusercontent.com/stefanprodan/hrval-action/master/src/hrval.sh \
-              -o /usr/local/bin/hrval.sh && sudo chmod +x /usr/local/bin/hrval.sh
-            sudo curl -sL https://raw.githubusercontent.com/stefanprodan/hrval-action/master/src/hrval-all.sh \
-              -o /usr/local/bin/hrval && sudo chmod +x /usr/local/bin/hrval
       - run:
           name: Validate Helm Releases in test dir
           command: |
