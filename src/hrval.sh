@@ -36,6 +36,10 @@ function download {
 function clone {
   ORIGIN=$(git rev-parse --show-toplevel)
   GIT_REPO=$(yq r ${1} spec.chart.git)
+  if [[ -n "${GITHUB_TOKEN}" ]]; then
+    BASE_URL=$(echo "${GIT_REPO}" | sed 's/ssh:\/\/git@//')
+    GIT_REPO="https://${GITHUB_TOKEN}:x-oauth-basic@${BASE_URL}"
+  fi
   GIT_REF=$(yq r ${1} spec.chart.ref)
   CHART_PATH=$(yq r ${1} spec.chart.path)
   cd ${2}

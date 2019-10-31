@@ -73,6 +73,29 @@ PASS - flagger/templates/rbac.yaml contains a valid ClusterRoleBinding
 PASS - flagger/templates/deployment.yaml contains a valid Deployment
 ```
 
+## Usage with private charts repositories
+
+To allow the action to be able to clone private charts repositories, you must [create a GitHub private access token](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line) and [add it as a secret](https://help.github.com/en/actions/automating-your-workflow-with-github-actions/creating-and-using-encrypted-secrets#creating-encrypted-secrets) to the target repository. NOTE: secret names *cannot* start with `GITHUB_` as these are reserved.
+
+You can then pass the secret (in this case, `GH_TOKEN`) into the action like so:
+```yaml
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  hrval:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Validate Helm Releases in test dir
+        uses: stefanprodan/hrval-action@v2.6.0
+        with:
+          helmRelease: test/
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+```
+
 ## CI alternatives
 
 The validation scripts can be used in any CI system. 
