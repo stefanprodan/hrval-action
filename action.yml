@@ -17,6 +17,9 @@ inputs:
   helmVersion:
     description: 'Version of Helm to validate against'
     default: 'v2'
+outputs:
+  numFilesTested:
+    description: The number of HelmRelease files which were tested
 
 runs:
   using: 'docker'
