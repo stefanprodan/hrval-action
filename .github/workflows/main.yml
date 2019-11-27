@@ -31,6 +31,7 @@ jobs:
         uses: ./
         with:
           helmRelease: test/
+        # TODO: Check that 3 things got tested?
   push-container:
     runs-on: ubuntu-latest
     needs: [test-action, test-dir]

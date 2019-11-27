@@ -12,11 +12,13 @@ if [[ ${HELM_VER} == "v2" ]]; then
     helm init --client-only
 fi
 
+# If the path provided is actually a file, just run hrval against this one file
 if test -f "${DIR}"; then
   ${HRVAL} ${DIR} ${IGNORE_VALUES} ${KUBE_VER} ${HELM_VER}
   exit 0
 fi
 
+# If the path provided is not a directory, print error message and exit
 if [ ! -d "$DIR" ]; then
   echo "\"${DIR}\" directory not found!"
   exit 1
@@ -31,8 +33,9 @@ function isHelmRelease {
   fi
 }
 
+# Find yaml files in directory recursively
 DIR_PATH=$(echo ${DIR} | sed "s/^\///;s/\/$//")
-for f in ${DIR_PATH}/*.yaml; do
+for f in `find ${DIR} -type f -name '*.yaml'`; do
   if [[ $(isHelmRelease ${f}) == "true" ]]; then
     ${HRVAL} ${f} ${IGNORE_VALUES} ${KUBE_VER} ${HELM_VER}
   else
