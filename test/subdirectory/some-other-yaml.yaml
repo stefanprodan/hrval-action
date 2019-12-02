@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: foo
+  annotations:
+    description: a file which should not get tested by hrval
+data: {}

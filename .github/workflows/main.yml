@@ -28,12 +28,18 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - name: Validate all Helm Releases in the test dir
+        id: validate-dir
         uses: ./
         with:
           helmRelease: test/
+      - name: Check tested file count
+        env:
+          NUM_FILES_TESTED: ${{ steps.validate-dir.outputs.numFilesTested }}
+        run: "(( NUM_FILES_TESTED==3 ))"
   push-container:
     runs-on: ubuntu-latest
     needs: [test-action, test-dir]
+    if: github.repository == 'stefanprodan/hrval-action' && github.ref == 'master'
     steps:
       - uses: actions/checkout@v1
       - name: Publish to Docker Hub
