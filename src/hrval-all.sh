@@ -36,7 +36,7 @@ function isHelmRelease {
 # Find yaml files in directory recursively
 DIR_PATH=$(echo ${DIR} | sed "s/^\///;s/\/$//")
 FILES_TESTED=0
-for f in `find ${DIR} -type f -name '*.yaml'`; do
+for f in `find ${DIR} -type f -name '*.yaml' -or -name '*.yml'`; do
   if [[ $(isHelmRelease ${f}) == "true" ]]; then
     ${HRVAL} ${f} ${IGNORE_VALUES} ${KUBE_VER} ${HELM_VER}
     FILES_TESTED=$(( FILES_TESTED+1 ))
