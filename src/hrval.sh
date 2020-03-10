@@ -82,7 +82,7 @@ function validate {
   echo "Writing Helm release to ${TMPDIR}/${HELM_RELEASE_NAME}.release.yaml"
   if [[ ${HELM_VER} == "v3" ]]; then
     # Helm v3 bug: https://github.com/helm/helm/issues/6416
-#    if [[ -z "${CHART_PATH}" ]]; then
+#    if [[ "${CHART_PATH}" ]]; then
 #      helmv3 dependency build ${CHART_DIR}
 #    fi
     helmv3 template ${HELM_RELEASE_NAME} ${CHART_DIR} \
@@ -90,7 +90,7 @@ function validate {
       --skip-crds=true \
       -f ${TMPDIR}/${HELM_RELEASE_NAME}.values.yaml > ${TMPDIR}/${HELM_RELEASE_NAME}.release.yaml
   else
-    if [[ -z "${CHART_PATH}" ]]; then
+    if [[ "${CHART_PATH}" ]]; then
       helm dependency build ${CHART_DIR}
     fi
     helm template ${CHART_DIR} \
