@@ -96,6 +96,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
 ```
 
+Gitlab CI Token is also possible using `GITLAB_CI_TOKEN`.
+
 ## CI alternatives
 
 The validation scripts can be used in any CI system. 
