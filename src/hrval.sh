@@ -73,10 +73,14 @@ function validate {
 
   HELM_RELEASE_NAME=$(yq r ${HELM_RELEASE} metadata.name)
   HELM_RELEASE_NAMESPACE=$(yq r ${HELM_RELEASE} metadata.namespace)
+  HELM_RELEASE_VALUESFROM_CHARTFILEREF=$(yq r ${HELM_RELEASE} 'spec.valuesFrom[*].chartFileRef.path')
 
   if [[ ${IGNORE_VALUES} == "true" ]]; then
     echo "Ingnoring Helm release values"
     echo "" > ${TMPDIR}/${HELM_RELEASE_NAME}.values.yaml
+  elif [[ ! -z "$HELM_RELEASE_VALUESFROM_CHARTFILEREF" ]]; then
+    echo "Extracting values from ${CHART_DIR}${HELM_RELEASE_VALUESFROM_CHARTFILEREF}"
+    cat ${CHART_DIR}${HELM_RELEASE_VALUESFROM_CHARTFILEREF} > ${TMPDIR}/${HELM_RELEASE_NAME}.values.yaml
   else
     echo "Extracting values to ${TMPDIR}/${HELM_RELEASE_NAME}.values.yaml"
     yq r ${HELM_RELEASE} spec.values > ${TMPDIR}/${HELM_RELEASE_NAME}.values.yaml
