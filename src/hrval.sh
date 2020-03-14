@@ -39,6 +39,9 @@ function clone {
   if [[ -n "${GITHUB_TOKEN}" ]]; then
     BASE_URL=$(echo "${GIT_REPO}" | sed -e 's/ssh:\/\///' -e 's/git@//' -e 's/:/\//')
     GIT_REPO="https://${GITHUB_TOKEN}:x-oauth-basic@${BASE_URL}"
+  elif [[ -n "${GITLAB_CI_TOKEN}" ]]; then
+    BASE_URL=$(echo "${GIT_REPO}" | sed -e 's/ssh:\/\///' -e 's/git@//' -e 's/:/\//')
+    GIT_REPO="https://gitlab-ci-token:${GITLAB_CI_TOKEN}@${BASE_URL}"
   fi
   GIT_REF=$(yq r ${1} spec.chart.ref)
   CHART_PATH=$(yq r ${1} spec.chart.path)
