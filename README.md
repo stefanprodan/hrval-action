@@ -96,6 +96,32 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
 ```
 
+If you set `awsS3Repo: true`,  make sure you set the appropriate environment variables for helm s3 plugin to work.  Example:
+```yaml
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  hrval:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Validate Helm Releases in test dir
+        uses: stefanprodan/hrval-action@v3.1.0
+        with:
+          helmRelease: test/
+          awsS3Repo: true
+          awsS3RepoName: example-s3-helm-repo
+          awsS3Plugin: https://github.com/hypnoglow/helm-s3.git
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: "us-east-1"
+
+```
+
 Gitlab CI Token is also possible using `GITLAB_CI_TOKEN`.
 
 ## CI alternatives

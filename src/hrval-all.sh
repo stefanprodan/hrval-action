@@ -7,9 +7,18 @@ IGNORE_VALUES=${2-false}
 KUBE_VER=${3-master}
 HELM_VER=${4-v2}
 HRVAL="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )/hrval.sh"
+AWS_S3_REPO=${5-false}
+AWS_S3_REPO_NAME=${6-""}
+AWS_S3_PLUGIN={$7-""}
 
 if [[ ${HELM_VER} == "v2" ]]; then
     helm init --client-only
+fi
+
+if [[ ${AWS_S3_REPO} == true ]]; then
+    helm plugin install ${AWS_S3_PLUGIN}
+    helm repo add ${AWS_S3_REPO_NAME} s3:/${AWS_S3_REPO_NAME}/charts
+    helm repo update
 fi
 
 # If the path provided is actually a file, just run hrval against this one file
