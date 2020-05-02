@@ -1,6 +1,6 @@
 FROM garethr/kubeval:latest
 
-RUN apk --no-cache add curl bash
+RUN apk --no-cache add curl bash git
 
 COPY LICENSE README.md /
 
