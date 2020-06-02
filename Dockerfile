@@ -1,4 +1,6 @@
-FROM golang:1.13
+FROM garethr/kubeval:latest
+
+RUN apk --no-cache add curl bash git openssh-client
 
 COPY LICENSE README.md /
 

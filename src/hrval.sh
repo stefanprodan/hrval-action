@@ -28,8 +28,15 @@ function download {
   CHART_NAME=$(yq r ${1} spec.chart.name)
   CHART_VERSION=$(yq r ${1} spec.chart.version)
   CHART_DIR=${2}/${CHART_NAME}
-  helm repo add ${CHART_NAME} ${CHART_REPO}
-  helm fetch --version ${CHART_VERSION} --untar ${CHART_NAME}/${CHART_NAME} --untardir ${2}
+
+  if [[ ${HELM_VER} == "v3" ]]; then
+    helmv3 repo add ${CHART_NAME} ${CHART_REPO}
+    helmv3 fetch --version ${CHART_VERSION} --untar ${CHART_NAME}/${CHART_NAME} --untardir ${2}
+  else
+    helm repo add ${CHART_NAME} ${CHART_REPO}
+    helm fetch --version ${CHART_VERSION} --untar ${CHART_NAME}/${CHART_NAME} --untardir ${2}
+  fi
+
   echo ${CHART_DIR}
 }
 
@@ -92,10 +99,9 @@ function validate {
 
   echo "Writing Helm release to ${TMPDIR}/${HELM_RELEASE_NAME}.release.yaml"
   if [[ ${HELM_VER} == "v3" ]]; then
-    # Helm v3 bug: https://github.com/helm/helm/issues/6416
-#    if [[ "${CHART_PATH}" ]]; then
-#      helmv3 dependency build ${CHART_DIR}
-#    fi
+    if [[ "${CHART_PATH}" ]]; then
+      helmv3 dependency build ${CHART_DIR}
+    fi
     helmv3 template ${HELM_RELEASE_NAME} ${CHART_DIR} \
       --namespace ${HELM_RELEASE_NAMESPACE} \
       --skip-crds=true \

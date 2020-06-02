@@ -17,6 +17,15 @@ inputs:
   helmVersion:
     description: 'Version of Helm to validate against'
     default: 'v2'
+  awsS3Repo:
+    description: '(Optional) Set to true if using an AWS S3 Helm Repo'
+    default: false
+  awsS3RepoName:
+    description: '(Optional) The name of the AWS S3 Helm repo, if awsS3Repo was set to true'
+    default: ''
+  awsS3Plugin:
+    description: '(Optional) AWS S3 Plugin to be used in the helm plugin install command'
+    default: ''
 outputs:
   numFilesTested:
     description: The number of HelmRelease files which were tested
@@ -29,3 +38,6 @@ runs:
     - ${{ inputs.ignoreValues }}
     - ${{ inputs.kubernetesVersion }}
     - ${{ inputs.helmVersion }}
+    - ${{ inputs.awsS3Repo }}
+    - ${{ inputs.awsS3RepoName }}
+    - ${{ inputs.awsS3RepoPlugin }}
