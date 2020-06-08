@@ -42,9 +42,10 @@ function download {
 
 function copy_local {
   CHART_PATH=$(yq r ${1} spec.chart.path)
-  cp ${GITHUB_WORKSPACE}/${CHART_PATH} ${2}
+  DEST_PATH=${2}/${CHART_PATH}
+  cp -avr ${GITHUB_WORKSPACE}/${CHART_PATH}/. ${DEST_PATH}
  
-  echo ${2}/${CHART_PATH}
+  echo ${DEST_PATH}
 }
 
 function clone {
