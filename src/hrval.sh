@@ -40,25 +40,46 @@ function download {
   echo ${CHART_DIR}
 }
 
+
+function fetch {
+  cd ${1}
+  git init -q
+  git remote add origin ${3}
+  git fetch -q origin
+  git checkout -q ${4}
+  cd ${5}
+  echo ${2}
+}
+
+
 function clone {
   ORIGIN=$(git rev-parse --show-toplevel)
-  GIT_REPO=$(yq r ${1} spec.chart.git)
+  CHART_GIT_REPO=$(yq r ${1} spec.chart.git)
+  RELEASE_GIT_REPO=$(git remote get-url origin)
+
+  CHART_BASE_URL=$(basename $(echo "${CHART_GIT_REPO}" | sed -e 's/ssh:\/\///' -e 's/http:\/\///' -e 's/https:\/\///' -e 's/git@//' -e 's/:/\//') .git )
+  RELEASE_BASE_URL=$(basename $(echo "${RELEASE_GIT_REPO}" | sed -e 's/ssh:\/\///' -e 's/http:\/\///' -e 's/https:\/\///' -e 's/git@//' -e 's/:/\//') .git )
+
   if [[ -n "${GITHUB_TOKEN}" ]]; then
-    BASE_URL=$(echo "${GIT_REPO}" | sed -e 's/ssh:\/\///' -e 's/git@//' -e 's/:/\//')
-    GIT_REPO="https://${GITHUB_TOKEN}:x-oauth-basic@${BASE_URL}"
+    CHART_GIT_REPO="https://${GITHUB_TOKEN}:x-oauth-basic@${CHART_BASE_URL}"
   elif [[ -n "${GITLAB_CI_TOKEN}" ]]; then
-    BASE_URL=$(echo "${GIT_REPO}" | sed -e 's/ssh:\/\///' -e 's/git@//' -e 's/:/\//')
-    GIT_REPO="https://gitlab-ci-token:${GITLAB_CI_TOKEN}@${BASE_URL}"
+    CHART_GIT_REPO="https://gitlab-ci-token:${GITLAB_CI_TOKEN}@${CHART_BASE_URL}"
   fi
+
   GIT_REF=$(yq r ${1} spec.chart.ref)
   CHART_PATH=$(yq r ${1} spec.chart.path)
-  cd ${2}
-  git init -q
-  git remote add origin ${GIT_REPO}
-  git fetch -q origin
-  git checkout -q ${GIT_REF}
-  cd ${ORIGIN}
-  echo ${2}/${CHART_PATH}
+
+  if [ ! -z ${3} ]; then
+    if [[ "${CHART_BASE_URL}" == "${RELEASE_BASE_URL}" ]] && [[ ${GIT_REF} == "${4}" ]]; then
+      # Clone from the head repository branch/ref
+      fetch ${2} ${2}/${CHART_PATH} ${RELEASE_GIT_REPO} ${3} ${ORIGIN}
+    else
+      # Regular clone
+      fetch ${2} ${2}/${CHART_PATH} ${CHART_GIT_REPO} ${GIT_REF} ${ORIGIN}
+    fi
+  else
+      fetch ${2} ${2}/${CHART_PATH} ${CHART_GIT_REPO} ${GIT_REF} ${ORIGIN}
+  fi
 }
 
 function validate {
@@ -72,10 +93,10 @@ function validate {
 
   if [[ -z "${CHART_PATH}" ]]; then
     echo "Downloading to ${TMPDIR}"
-    CHART_DIR=$(download ${HELM_RELEASE} ${TMPDIR}| tail -n1)
+    CHART_DIR=$(download ${HELM_RELEASE} ${TMPDIR} ${HELM_VER}| tail -n1)
   else
     echo "Cloning to ${TMPDIR}"
-    CHART_DIR=$(clone ${HELM_RELEASE} ${TMPDIR}| tail -n1)
+    CHART_DIR=$(clone ${HELM_RELEASE} ${TMPDIR} ${HRVAL_HEAD_BRANCH} ${HRVAL_BASE_BRANCH} | tail -n1)
   fi
 
   HELM_RELEASE_NAME=$(yq r ${HELM_RELEASE} metadata.name)

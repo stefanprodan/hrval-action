@@ -30,17 +30,17 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - name: Validate Helm Releases in test dir
-        uses: stefanprodan/hrval-action@v3.1.0
+        uses: stefanprodan/hrval-action@v3.2.0
         with:
           helmRelease: test/
       - name: Validate Helm Release from Helm Repo
-        uses: stefanprodan/hrval-action@v3.1.0
+        uses: stefanprodan/hrval-action@v3.2.0
         with:
           helmRelease: test/flagger.yaml
           helmVersion: v2
           kubernetesVersion: 1.17.0
       - name: Validate Helm Release from Git Repo
-        uses: stefanprodan/hrval-action@v3.1.0
+        uses: stefanprodan/hrval-action@v3.2.0
         with:
           helmRelease: test/podinfo.yaml
           helmVersion: v3
@@ -89,7 +89,7 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - name: Validate Helm Releases in test dir
-        uses: stefanprodan/hrval-action@v3.1.0
+        uses: stefanprodan/hrval-action@v3.2.0
         with:
           helmRelease: test/
         env:
@@ -108,7 +108,7 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - name: Validate Helm Releases in test dir
-        uses: stefanprodan/hrval-action@v3.1.0
+        uses: stefanprodan/hrval-action@v3.2.0
         with:
           helmRelease: test/
           awsS3Repo: true
@@ -123,6 +123,33 @@ jobs:
 ```
 
 Gitlab CI Token is also possible using `GITLAB_CI_TOKEN`.
+
+## Usage with pull requests containing changes of Helm chart source located in base repository branch
+
+If a base repository branch of pull request is referenced in helm release,
+you need to pass `HRVAL_BASE_BRANCH` and `HRVAL_HEAD_BRANCH` environment variables
+to an action to make sure it will check out amended version of the chart
+from a head repository branch.
+
+
+```yaml
+name: CI
+
+on: [pull_request]
+
+jobs:
+  hrval:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Validate Helm Releases in test dir
+        uses: stefanprodan/hrval-action@v3.2.0
+        with:
+          helmRelease: test/
+        env:
+          HRVAL_BASE_BRANCH: ${{ github.base_ref }}
+          HRVAL_HEAD_BRANCH: ${{ github.head_ref }}
+```
 
 ## CI alternatives
 
