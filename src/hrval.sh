@@ -62,7 +62,7 @@ function clone {
   RELEASE_GIT_REPO=$(git remote get-url origin)
 
   CHART_BASE_URL=$(echo "${CHART_GIT_REPO}" | sed -e 's/ssh:\/\///' -e 's/http:\/\///' -e 's/https:\/\///' -e 's/git@//' -e 's/:/\//')
-  RELEASE_BASE_URL=$(basename $(echo "${RELEASE_GIT_REPO}" | sed -e 's/ssh:\/\///' -e 's/http:\/\///' -e 's/https:\/\///' -e 's/git@//' -e 's/:/\//') .git )
+  RELEASE_BASE_URL=$(echo "${RELEASE_GIT_REPO}" | sed -e 's/ssh:\/\///' -e 's/http:\/\///' -e 's/https:\/\///' -e 's/git@//' -e 's/:/\//')
 
   if [[ -n "${GITHUB_TOKEN}" ]]; then
     CHART_GIT_REPO="https://${GITHUB_TOKEN}:x-oauth-basic@${CHART_BASE_URL}"
