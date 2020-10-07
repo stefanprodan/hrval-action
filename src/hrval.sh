@@ -6,6 +6,7 @@ HELM_RELEASE=${1}
 IGNORE_VALUES=${2}
 KUBE_VER=${3-master}
 HELM_VER=${4-v2}
+CACHEDIR=${5-""}
 
 if test ! -f "${HELM_RELEASE}"; then
   echo "\"${HELM_RELEASE}\" Helm release file not found!"
@@ -22,6 +23,7 @@ function isHelmRelease {
     echo false
   fi
 }
+
 
 function download {
   CHART_REPO=$(yq r ${1} spec.chart.repository)
@@ -86,22 +88,79 @@ function clone {
   fi
 }
 
+
+function retrieve_sources {
+    HELM_RELEASE=${1}
+    TMPDIR=${2}
+
+    CHART_PATH=$(yq r ${HELM_RELEASE} spec.chart.path)
+
+    if [[ -z "${CACHEDIR}" ]]; then
+
+      # Retrieve files directly into tempdir
+      if [[ -z "${CHART_PATH}" ]]; then
+        >&2 echo "Downloading to ${TMPDIR}"
+        CHART_DIR=$(download ${HELM_RELEASE} ${TMPDIR} ${HELM_VER}| tail -n1)
+      else
+        >&2 echo "Cloning to ${TMPDIR}"
+        CHART_DIR=$(clone ${HELM_RELEASE} ${TMPDIR} ${HRVAL_HEAD_BRANCH} ${HRVAL_BASE_BRANCH} | tail -n1)
+      fi
+
+    else
+      # Retrieve existing resource from cache directory, or use new if it exists.
+
+      if [[ -z "${CHART_PATH}" ]]; then
+        # Caches releases from Helm repos
+
+        CHART_REPO=$(yq r ${HELM_RELEASE} spec.chart.repository)
+        CHART_REPO_MD5=`/bin/echo $CHART_REPO | /usr/bin/md5sum | cut -f1 -d" "`
+        CHART_NAME=$(yq r ${HELM_RELEASE} spec.chart.name)
+        CHART_VERSION=$(yq r ${HELM_RELEASE} spec.chart.version)
+        CHART_LOCAL_PATH=${CACHEDIR}/${CHART_REPO_MD5}/${CHART_NAME}/${CHART_VERSION}
+
+        if [[ ! -d ${CHART_LOCAL_PATH} ]]; then
+          mkdir -p ${CHART_LOCAL_PATH}
+          >&2 echo "Downloading to ${CHART_LOCAL_PATH}"
+          CHART_DIR=$(download ${HELM_RELEASE} ${CHART_LOCAL_PATH} ${HELM_VER}| tail -n1)
+        else
+          >&2 echo "Using cached sources from ${CHART_LOCAL_PATH}"
+          CHART_DIR=${CHART_LOCAL_PATH}/${CHART_NAME}
+        fi
+
+      else
+          # Caches releases from Git repos
+
+          CHART_GIT_REPO=$(yq r ${1} spec.chart.git)
+          CHART_PATH=$(yq r ${1} spec.chart.path)
+          GIT_REF=$(yq r ${1} spec.chart.ref)
+
+          CHART_LOCAL_PATH=${CACHEDIR}/${CHART_GIT_REPO}/${GIT_REF}
+
+          if [[ ! -d ${CHART_LOCAL_PATH} ]]; then
+            mkdir -p ${CHART_LOCAL_PATH}
+            >&2 echo "Cloning to ${CHART_LOCAL_PATH}"
+            CHART_DIR=$(clone ${HELM_RELEASE} ${CHART_LOCAL_PATH} ${HRVAL_HEAD_BRANCH} ${HRVAL_BASE_BRANCH} | tail -n1)
+          else
+            >&2 echo "Using cached sources from ${CHART_LOCAL_PATH}"
+            CHART_DIR=${CHART_LOCAL_PATH}/${CHART_PATH}
+          fi
+
+        fi
+
+    fi
+
+    echo ${CHART_DIR}
+}
+
+
 function validate {
   if [[ $(isHelmRelease ${HELM_RELEASE}) == "false" ]]; then
     echo "\"${HELM_RELEASE}\" is not of kind HelmRelease!"
     exit 1
   fi
 
-  TMPDIR=$(mktemp -d)
-  CHART_PATH=$(yq r ${HELM_RELEASE} spec.chart.path)
-
-  if [[ -z "${CHART_PATH}" ]]; then
-    echo "Downloading to ${TMPDIR}"
-    CHART_DIR=$(download ${HELM_RELEASE} ${TMPDIR} ${HELM_VER}| tail -n1)
-  else
-    echo "Cloning to ${TMPDIR}"
-    CHART_DIR=$(clone ${HELM_RELEASE} ${TMPDIR} ${HRVAL_HEAD_BRANCH} ${HRVAL_BASE_BRANCH} | tail -n1)
-  fi
+  TMPDIR="$(mktemp -d)"
+  CHART_DIR=$(retrieve_sources ${HELM_RELEASE} ${TMPDIR})
 
   HELM_RELEASE_NAME=$(yq r ${HELM_RELEASE} metadata.name)
   HELM_RELEASE_NAMESPACE=$(yq r ${HELM_RELEASE} metadata.namespace)

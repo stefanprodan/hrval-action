@@ -10,6 +10,13 @@ HRVAL="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )/hrval.s
 AWS_S3_REPO=${5-false}
 AWS_S3_REPO_NAME=${6-""}
 AWS_S3_PLUGIN={$7-""}
+HELM_SOURCES_CACHE_ENABLED=${8-""}
+
+if [ "${HELM_SOURCES_CACHE_ENABLED}" == "true" ]; then
+  CACHEDIR=$(mktemp -d)
+else
+  CACHEDIR=""
+fi
 
 if [[ ${HELM_VER} == "v2" ]]; then
     helm init --client-only
@@ -23,7 +30,7 @@ fi
 
 # If the path provided is actually a file, just run hrval against this one file
 if test -f "${DIR}"; then
-  ${HRVAL} ${DIR} ${IGNORE_VALUES} ${KUBE_VER} ${HELM_VER}
+  ${HRVAL} ${DIR} ${IGNORE_VALUES} ${KUBE_VER} ${HELM_VER} ${CACHEDIR}
   exit 0
 fi
 
@@ -47,7 +54,7 @@ DIR_PATH=$(echo ${DIR} | sed "s/^\///;s/\/$//")
 FILES_TESTED=0
 for f in `find ${DIR} -type f -name '*.yaml' -or -name '*.yml'`; do
   if [[ $(isHelmRelease ${f}) == "true" ]]; then
-    ${HRVAL} ${f} ${IGNORE_VALUES} ${KUBE_VER} ${HELM_VER}
+    ${HRVAL} ${f} ${IGNORE_VALUES} ${KUBE_VER} ${HELM_VER} ${CACHEDIR}
     FILES_TESTED=$(( FILES_TESTED+1 ))
   else
     echo "Ignoring ${f} not a HelmRelease"
