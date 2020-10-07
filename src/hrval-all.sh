@@ -15,7 +15,7 @@ HELM_SOURCES_CACHE_ENABLED=${8-""}
 if [ "${HELM_SOURCES_CACHE_ENABLED}" == "true" ]; then
   CACHEDIR=$(mktemp -d)
 else
-  CACHEDIR=""
+  CACHEDIR="${CACHEDIR}"
 fi
 
 if [[ ${HELM_VER} == "v2" ]]; then
