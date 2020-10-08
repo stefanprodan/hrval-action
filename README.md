@@ -157,7 +157,7 @@ jobs:
 Sometimes single Helm release might be referenced multiple times in a single Flux repository,
 for example if staging branch of Helm chart repository is used as a release ref across all staging releases.
 A property named `helmSourcesCacheEnabled` enables caching for such releases,
-so a single Helm repository chafrt version or Git repository ref
+so a single Helm repository chart version or Git repository ref
 will be retrieved only once, and cached version will be used for validation of another releases which reuse same sources.
 
 

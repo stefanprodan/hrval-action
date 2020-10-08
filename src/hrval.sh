@@ -107,7 +107,8 @@ function retrieve_sources {
       fi
 
     else
-      # Retrieve existing resource from cache directory, or use new if it exists.
+      # Retrieve existing helm chart source from cache, 
+      # or create new cache directory if it does not exist yet.
 
       if [[ -z "${CHART_PATH}" ]]; then
         # Caches releases from Helm repos
