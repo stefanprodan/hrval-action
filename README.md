@@ -109,7 +109,7 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - name: Validate Helm Releases in test dir
-        uses: stefanprodan/hrval-action@v3.2.0
+        uses: stefanprodan/hrval-action@master
         with:
           helmRelease: test/
           awsS3Repo: true
@@ -144,7 +144,7 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - name: Validate Helm Releases in test dir
-        uses: stefanprodan/hrval-action@v3.2.0
+        uses: stefanprodan/hrval-action@master
         with:
           helmRelease: test/
         env:
@@ -172,7 +172,7 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - name: Validate Helm Releases in test dir
-        uses: stefanprodan/hrval-action@v3.2.0
+        uses: stefanprodan/hrval-action@master
         with:
           helmRelease: test/
           helmSourcesCacheEnabled: true
@@ -190,7 +190,7 @@ version: 2.1
 jobs:
   hrval:
     docker:
-      - image: stefanprodan/hrval
+      - image: stefanprodan/hrval:latest
     steps:
       - checkout
       - run:
