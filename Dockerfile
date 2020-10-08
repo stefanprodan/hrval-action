@@ -1,4 +1,4 @@
-FROM garethr/kubeval:latest
+FROM garethr/kubeval:0.15.0
 
 RUN apk --no-cache add curl bash git openssh-client
 
