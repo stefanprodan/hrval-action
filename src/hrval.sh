@@ -161,6 +161,7 @@ function validate {
 
   TMPDIR="$(mktemp -d)"
   CHART_DIR=$(retrieve_sources ${HELM_RELEASE} ${TMPDIR})
+  CHART_PATH=$(yq r ${HELM_RELEASE} spec.chart.path)
 
   HELM_RELEASE_NAME=$(yq r ${HELM_RELEASE} metadata.name)
   HELM_RELEASE_NAMESPACE=$(yq r ${HELM_RELEASE} metadata.namespace)
