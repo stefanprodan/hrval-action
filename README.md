@@ -31,17 +31,17 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - name: Validate Helm Releases in test dir
-        uses: stefanprodan/hrval-action@v3.2.0
+        uses: stefanprodan/hrval-action@master
         with:
           helmRelease: test/
       - name: Validate Helm Release from Helm Repo
-        uses: stefanprodan/hrval-action@v3.2.0
+        uses: stefanprodan/hrval-action@master
         with:
           helmRelease: test/flagger.yaml
           helmVersion: v2
           kubernetesVersion: 1.17.0
       - name: Validate Helm Release from Git Repo
-        uses: stefanprodan/hrval-action@v3.2.0
+        uses: stefanprodan/hrval-action@master
         with:
           helmRelease: test/podinfo.yaml
           helmVersion: v3
@@ -90,7 +90,7 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - name: Validate Helm Releases in test dir
-        uses: stefanprodan/hrval-action@v3.2.0
+        uses: stefanprodan/hrval-action@master
         with:
           helmRelease: test/
         env:
