@@ -51,7 +51,12 @@ function isHelmRelease {
 
 # Find yaml files in directory recursively
 FILES_TESTED=0
-for f in $(find "${DIR}" -type f -name '*.yaml' -or -name '*.yml'); do
+declare -a FOUND_FILES=()
+while read -r file; do
+    FOUND_FILES+=( "$file" )
+done < <(find "${DIR}" -type f -name '*.yaml' -o -name '*.yml')
+
+for f in "${FOUND_FILES[@]}"; do
   if [[ $(isHelmRelease "${f}") == "true" ]]; then
     ${HRVAL} "${f}" "${IGNORE_VALUES}" "${KUBE_VER}" "${HELM_VER}" "${CACHEDIR}"
     FILES_TESTED=$(( FILES_TESTED+1 ))
