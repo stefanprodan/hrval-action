@@ -9,21 +9,28 @@ HELM_VER=${4-v2}
 HRVAL="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )/hrval.sh"
 AWS_S3_REPO=${5-false}
 AWS_S3_REPO_NAME=${6-""}
-AWS_S3_PLUGIN={$7-""}
+AWS_S3_PLUGIN="${7-""}"
+HELM_SOURCES_CACHE_ENABLED=${8-""}
+
+if [ "${HELM_SOURCES_CACHE_ENABLED}" == "true" ]; then
+  CACHEDIR=$(mktemp -d)
+else
+  CACHEDIR="${CACHEDIR}"
+fi
 
 if [[ ${HELM_VER} == "v2" ]]; then
     helm init --client-only
 fi
 
 if [[ ${AWS_S3_REPO} == true ]]; then
-    helm plugin install ${AWS_S3_PLUGIN}
-    helm repo add ${AWS_S3_REPO_NAME} s3:/${AWS_S3_REPO_NAME}/charts
+    helm plugin install "${AWS_S3_PLUGIN}"
+    helm repo add "${AWS_S3_REPO_NAME}" "s3:/${AWS_S3_REPO_NAME}/charts"
     helm repo update
 fi
 
 # If the path provided is actually a file, just run hrval against this one file
 if test -f "${DIR}"; then
-  ${HRVAL} ${DIR} ${IGNORE_VALUES} ${KUBE_VER} ${HELM_VER}
+  ${HRVAL} "${DIR}" "${IGNORE_VALUES}" "${KUBE_VER}" "${HELM_VER}" "${CACHEDIR}"
   exit 0
 fi
 
@@ -34,7 +41,7 @@ if [ ! -d "$DIR" ]; then
 fi
 
 function isHelmRelease {
-  KIND=$(yq r ${1} kind)
+  KIND=$(yq r "${1}" kind)
   if [[ ${KIND} == "HelmRelease" ]]; then
       echo true
   else
@@ -43,11 +50,15 @@ function isHelmRelease {
 }
 
 # Find yaml files in directory recursively
-DIR_PATH=$(echo ${DIR} | sed "s/^\///;s/\/$//")
 FILES_TESTED=0
-for f in `find ${DIR} -type f -name '*.yaml' -or -name '*.yml'`; do
-  if [[ $(isHelmRelease ${f}) == "true" ]]; then
-    ${HRVAL} ${f} ${IGNORE_VALUES} ${KUBE_VER} ${HELM_VER}
+declare -a FOUND_FILES=()
+while read -r file; do
+    FOUND_FILES+=( "$file" )
+done < <(find "${DIR}" -type f -name '*.yaml' -o -name '*.yml')
+
+for f in "${FOUND_FILES[@]}"; do
+  if [[ $(isHelmRelease "${f}") == "true" ]]; then
+    ${HRVAL} "${f}" "${IGNORE_VALUES}" "${KUBE_VER}" "${HELM_VER}" "${CACHEDIR}"
     FILES_TESTED=$(( FILES_TESTED+1 ))
   else
     echo "Ignoring ${f} not a HelmRelease"
