@@ -26,6 +26,12 @@ inputs:
   awsS3Plugin:
     description: '(Optional) AWS S3 Plugin to be used in the helm plugin install command'
     default: ''
+  chartRepoUserName:
+    description: '(Optional) The user name for the chart repo'
+    default: ''
+  chartRepoPassword:
+    descriptiono: '(Optional) The password for the chart repo'
+    default: ''
   helmSourcesCacheEnabled:
     description: '(Optional) Enabled Helm source caching, so same release or ref will not be downloaded twice.'
     default: 'false'
@@ -44,4 +50,6 @@ runs:
     - ${{ inputs.awsS3Repo }}
     - ${{ inputs.awsS3RepoName }}
     - ${{ inputs.awsS3RepoPlugin }}
+    - ${{ inputs.chartRepoUserName }}
+    - ${{ inputs.chartRepoPassword }}
     - ${{ inputs.helmSourcesCacheEnabled }}

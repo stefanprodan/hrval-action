@@ -10,7 +10,9 @@ HRVAL="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )/hrval.s
 AWS_S3_REPO=${5-false}
 AWS_S3_REPO_NAME=${6-""}
 AWS_S3_PLUGIN="${7-""}"
-HELM_SOURCES_CACHE_ENABLED=${8-""}
+CHART_REPO_USERNAME=${8-""}
+CHART_REPO_PASSWORD=${9-""}
+HELM_SOURCES_CACHE_ENABLED=${10-""}
 
 if [ "${HELM_SOURCES_CACHE_ENABLED}" == "true" ]; then
   CACHEDIR=$(mktemp -d)
@@ -58,7 +60,7 @@ done < <(find "${DIR}" -type f -name '*.yaml' -o -name '*.yml')
 
 for f in "${FOUND_FILES[@]}"; do
   if [[ $(isHelmRelease "${f}") == "true" ]]; then
-    ${HRVAL} "${f}" "${IGNORE_VALUES}" "${KUBE_VER}" "${HELM_VER}" "${CACHEDIR}"
+    ${HRVAL} "${f}" "${IGNORE_VALUES}" "${KUBE_VER}" "${HELM_VER}" "${CACHEDIR}" "${CHART_REPO_USERNAME}" "${CHART_REPO_PASSWORD}"
     FILES_TESTED=$(( FILES_TESTED+1 ))
   else
     echo "Ignoring ${f} not a HelmRelease"

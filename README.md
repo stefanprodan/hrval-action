@@ -1,8 +1,8 @@
 # hrval-action
 
-![CI](https://github.com/stefanprodan/hrval-action/workflows/CI/badge.svg)
+![CI](https://github.com/tenna-llc/hrval-action/workflows/CI/badge.svg)
 [![Docker](https://img.shields.io/badge/Docker%20Hub-stefanprodan%2Fhrval-blue)](https://hub.docker.com/r/stefanprodan/hrval)
-[![GitHub Super-Linter](https://github.com/stefanprodan/hrval-action/workflows/Lint%20Code%20Base/badge.svg)](https://github.com/marketplace/actions/super-linter)
+[![GitHub Super-Linter](https://github.com/tenna-llc/hrval-action/workflows/Lint%20Code%20Base/badge.svg)](https://github.com/marketplace/actions/super-linter)
 
 This GitHub action validates a Flux
 [Helm Release](https://docs.fluxcd.io/projects/helm-operator/en/latest/references/helmrelease-custom-resource.html)

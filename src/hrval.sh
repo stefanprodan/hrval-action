@@ -7,6 +7,8 @@ IGNORE_VALUES="${2}"
 KUBE_VER="${3-master}"
 HELM_VER="${4-v2}"
 CACHEDIR="${5-""}"
+CHART_REPO_USERNAME="${6-""}"
+CHART_REPO_PASSWORD="${7-""}"
 
 if test ! -f "${HELM_RELEASE}"; then
   echo "\"${HELM_RELEASE}\" Helm release file not found!"
@@ -34,11 +36,21 @@ function download {
   CHART_REPO_MD5=$(/bin/echo "${CHART_REPO}" | /usr/bin/md5sum | cut -f1 -d" ")
 
   if [[ "${HELM_VER}" == "v3" ]]; then
-    helmv3 repo add "${CHART_REPO_MD5}" "${CHART_REPO}"
+    if [[ -z ${CHART_REPO_USERNAME} ]];
+    then
+      helmv3 repo add "${CHART_REPO_MD5}" "${CHART_REPO}"
+    else
+      helmv3 repo add "${CHART_REPO_MD5}" "${CHART_REPO}" --username "${CHART_REPO_USERNAME}" --password "${CHART_REPO_PASSWORD}"
+    fi
     helmv3 repo update
     helmv3 fetch --version "${CHART_VERSION}" --untar "${CHART_REPO_MD5}/${CHART_NAME}" --untardir "${2}"
   else
-    helm repo add "${CHART_REPO_MD5}" "${CHART_REPO}"
+    if [[ -z ${CHART_REPO_USERNAME} ]];
+    then
+      helm repo add "${CHART_REPO_MD5}" "${CHART_REPO}"
+    else
+      helm repo add "${CHART_REPO_MD5}" "${CHART_REPO}" --username "${CHART_REPO_USERNAME}" --password "${CHART_REPO_PASSWORD}"
+    fi
     helm repo update
     helm fetch --version "${CHART_VERSION}" --untar "${CHART_REPO_MD5}/${CHART_NAME}" --untardir "${2}"
   fi
