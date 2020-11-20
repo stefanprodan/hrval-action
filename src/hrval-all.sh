@@ -33,7 +33,7 @@ if [[ ${AWS_S3_REPO} == true ]]; then
 fi
 
 if [[ ${GCS_REPO} == true ]]; then
-    helm plugin install "${GCS_PLUGIN}"
+    helm plugin install "${GCS_PLUGIN}" --version 0.2.2
     helm repo add "${GCS_REPO_NAME}" "gs://${GCS_BUCKET}/charts"
     helm repo update
 fi
