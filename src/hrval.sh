@@ -172,7 +172,7 @@ function validate {
     echo "" > "${TMPDIR}/${HELM_RELEASE_NAME}.values.yaml"
   else
     echo "Extracting values to ${TMPDIR}/${HELM_RELEASE_NAME}.values.yaml"
-    yq r "${HELM_RELEASE}" spec.values > "${TMPDIR}/${HELM_RELEASE_NAME}.values.yaml"
+    yq r -X "${HELM_RELEASE}" spec.values > "${TMPDIR}/${HELM_RELEASE_NAME}.values.yaml"
   fi
 
   echo "Writing Helm release to ${TMPDIR}/${HELM_RELEASE_NAME}.release.yaml"
