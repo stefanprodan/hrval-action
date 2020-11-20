@@ -26,6 +26,18 @@ inputs:
   awsS3Plugin:
     description: '(Optional) AWS S3 Plugin to be used in the helm plugin install command'
     default: ''
+  gcsRepo:
+    description: '(Optional) Set to true if using an GCS Helm Repo'
+    default: false
+  gcsRepoName:
+    description: '(Optional) The name of the GCS Helm repo, if gcsRepo was set to true'
+    default: ''
+  gcsBucket:
+    description: '(Optional) The name of the GCS bucket'
+    default: ''
+  gcsPlugin:
+    description: '(Optional) GCS Plugin to be used in the helm plugin install command'
+    default: 'https://github.com/hayorov/helm-gcs.git'
   helmSourcesCacheEnabled:
     description: '(Optional) Enabled Helm source caching, so same release or ref will not be downloaded twice.'
     default: 'false'
@@ -44,4 +56,8 @@ runs:
     - ${{ inputs.awsS3Repo }}
     - ${{ inputs.awsS3RepoName }}
     - ${{ inputs.awsS3RepoPlugin }}
+    - ${{ inputs.gcsRepo }}
+    - ${{ inputs.gcsRepoName }}
+    - ${{ inputs.gcsBucket }}
+    - ${{ inputs.gcsPlugin }}
     - ${{ inputs.helmSourcesCacheEnabled }}
