@@ -34,7 +34,7 @@ fi
 
 if [[ ${GCS_REPO} == true ]]; then
     helm plugin install "${GCS_PLUGIN}"
-    helm repo add "${GCS_REPO_NAME}" "gs:/${GCS_BUCKET}/charts"
+    helm repo add "${GCS_REPO_NAME}" "gs://${GCS_BUCKET}/charts"
     helm repo update
 fi
 
