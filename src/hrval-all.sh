@@ -10,7 +10,11 @@ HRVAL="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )/hrval.s
 AWS_S3_REPO=${5-false}
 AWS_S3_REPO_NAME=${6-""}
 AWS_S3_PLUGIN="${7-""}"
-HELM_SOURCES_CACHE_ENABLED=${8-""}
+GCS_REPO=${8-false}
+GCS_REPO_NAME=${9-""}
+GCS_BUCKET=${10-""}
+GCS_PLUGIN=${11-""}
+HELM_SOURCES_CACHE_ENABLED=${12-""}
 
 if [ "${HELM_SOURCES_CACHE_ENABLED}" == "true" ]; then
   CACHEDIR=$(mktemp -d)
@@ -25,6 +29,12 @@ fi
 if [[ ${AWS_S3_REPO} == true ]]; then
     helm plugin install "${AWS_S3_PLUGIN}"
     helm repo add "${AWS_S3_REPO_NAME}" "s3:/${AWS_S3_REPO_NAME}/charts"
+    helm repo update
+fi
+
+if [[ ${GCS_REPO} == true ]]; then
+    helm plugin install "${GCS_PLUGIN}" --version 0.2.2
+    helm repo add "${GCS_REPO_NAME}" "gs://${GCS_BUCKET}/charts"
     helm repo update
 fi
 
