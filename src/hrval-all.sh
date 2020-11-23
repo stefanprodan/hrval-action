@@ -50,11 +50,14 @@ function isHelmRelease {
 }
 
 # Find yaml files in directory recursively
+TMPDIR=$(mktemp -d)
+kustomize build ${DIR} -o ${TMPDIR}
+
 FILES_TESTED=0
 declare -a FOUND_FILES=()
 while read -r file; do
     FOUND_FILES+=( "$file" )
-done < <(find "${DIR}" -type f -name '*.yaml' -o -name '*.yml')
+done < <(find "${TMPDIR}" -type f -name '*.yaml' -o -name '*.yml')
 
 for f in "${FOUND_FILES[@]}"; do
   if [[ $(isHelmRelease "${f}") == "true" ]]; then
