@@ -33,9 +33,9 @@ if [[ ${AWS_S3_REPO} == true ]]; then
 fi
 
 if [[ ${GCS_REPO} == true ]]; then
-    helm plugin install "${GCS_PLUGIN}"
-    helm repo add "${GCS_REPO_NAME}" "gs://${GCS_BUCKET}/charts"
-    helm repo update
+    helmv3 plugin install "${GCS_PLUGIN}"
+    # helm repo add "${GCS_REPO_NAME}" "gs://${GCS_BUCKET}/charts"
+    # helm repo update
 fi
 
 # If the path provided is actually a file, just run hrval against this one file

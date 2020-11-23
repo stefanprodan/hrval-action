@@ -10,7 +10,6 @@ curl -sSL https://get.helm.sh/helm-v2.16.3-linux-amd64.tar.gz | tar xz && mv lin
 helm init --client-only --kubeconfig=$HOME/.kube/kubeconfig
 
 curl -sSL https://get.helm.sh/helm-v3.1.1-linux-amd64.tar.gz | tar xz && mv linux-amd64/helm /bin/helmv3 && rm -rf linux-amd64
-mkdir -p $HELM_HOME/plugins
 helmv3 version
 
 KUSTOMIZE=3.5.5
