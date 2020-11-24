@@ -11,10 +11,8 @@ AWS_S3_REPO=${5-false}
 AWS_S3_REPO_NAME=${6-""}
 AWS_S3_PLUGIN="${7-""}"
 GCS_REPO=${8-false}
-GCS_REPO_NAME=${9-""}
-GCS_BUCKET=${10-""}
-GCS_PLUGIN=${11-""}
-HELM_SOURCES_CACHE_ENABLED=${12-""}
+GCS_PLUGIN=${9-""}
+HELM_SOURCES_CACHE_ENABLED=${10-""}
 
 if [ "${HELM_SOURCES_CACHE_ENABLED}" == "true" ]; then
   CACHEDIR=$(mktemp -d)
@@ -33,9 +31,11 @@ if [[ ${AWS_S3_REPO} == true ]]; then
 fi
 
 if [[ ${GCS_REPO} == true ]]; then
+  if [[ "${HELM_VER}" == "v3" ]]; then
     helmv3 plugin install "${GCS_PLUGIN}"
-    # helm repo add "${GCS_REPO_NAME}" "gs://${GCS_BUCKET}/charts"
-    # helm repo update
+  else
+    helm plugin install "${GCS_PLUGIN}"
+  fi
 fi
 
 function validate {
