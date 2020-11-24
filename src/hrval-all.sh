@@ -31,6 +31,14 @@ if [[ ${AWS_S3_REPO} == true ]]; then
 fi
 
 if [[ ${GCS_REPO} == true ]]; then
+  if [[ ! -z "${GCP_SERVICE_ACCOUNT_KEY}" ]]; then
+    cat > $TMPDIR/service_account_key.json <${GCP_SERVICE_ACCOUNT_KEY}
+    export GOOGLE_APPLICATION_CREDENTIALS="$TMPDIR/service_account_key.json"
+  fi
+  if [[ ! -z "${GCP_PROJECT_ID}" ]]; then
+    export GCP_PROJECT="${GCP_PROJECT_ID}"
+  fi
+
   if [[ "${HELM_VER}" == "v3" ]]; then
     helmv3 plugin install "${GCS_PLUGIN}"
   else
