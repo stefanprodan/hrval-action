@@ -123,6 +123,30 @@ jobs:
 
 ```
 
+If you set `gcsRepo: true`,  make sure you set the appropriate environment variables for helm gcs plugin to work.  Example:
+```yaml
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  hrval:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Validate Helm Releases in test dir
+        uses: stefanprodan/hrval-action@master
+        with:
+          helmRelease: test
+          helmVersion: v3
+          gcsRepo: true
+          helmSourcesCacheEnabled: true
+        env:
+          GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+          GCP_SERVICE_ACCOUNT_KEY: ${{ secrets.GCP_SA_KEY }}
+
+```
+
 Gitlab CI Token is also possible using `GITLAB_CI_TOKEN`.
 
 ## Usage with pull requests containing changes of Helm chart source located in base repository branch
