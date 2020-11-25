@@ -69,15 +69,19 @@ function validate {
     fi
   }
 
-  # Find yaml files in directory recursively
-  TMPDIR=$(mktemp -d)
-  kustomize build ${DIR} -o ${TMPDIR}
+  # Run kustomize build
+  if [ -f "${DIR}/kustomization.yaml" ] || [ -f "${DIR}/kustomization.yml" ]; then
+    TMPDIR=$(mktemp -d)
+    kustomize build ${DIR} -o ${TMPDIR}
+    DIR=${TMPDIR}
+  fi
 
+  # Find yaml files in directory recursively
   FILES_TESTED=0
   declare -a FOUND_FILES=()
   while read -r file; do
       FOUND_FILES+=( "$file" )
-  done < <(find "${TMPDIR}" -type f -name '*.yaml' -o -name '*.yml')
+  done < <(find "${DIR}" -type f -name '*.yaml' -o -name '*.yml')
 
   for f in "${FOUND_FILES[@]}"; do
     if [[ $(isHelmRelease "${f}") == "true" ]]; then
