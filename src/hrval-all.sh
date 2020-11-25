@@ -32,8 +32,9 @@ fi
 
 if [[ ${GCS_REPO} == true ]]; then
   if [[ -n "${GCP_SERVICE_ACCOUNT_KEY}" ]]; then
-    echo "${GCP_SERVICE_ACCOUNT_KEY}" > $TMPDIR/service_account_key.json
-    export GOOGLE_APPLICATION_CREDENTIALS="$TMPDIR/service_account_key.json"
+    GCP_SA_KEY_FILE="$TMPDIR/service_account_key.json"
+    echo "${GCP_SERVICE_ACCOUNT_KEY}" > "${GCP_SA_KEY_FILE}"
+    export GOOGLE_APPLICATION_CREDENTIALS="${GCP_SA_KEY_FILE}"
   fi
   if [[ -n "${GCP_PROJECT_ID}" ]]; then
     export GCP_PROJECT="${GCP_PROJECT_ID}"
