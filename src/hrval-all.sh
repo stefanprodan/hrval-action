@@ -31,11 +31,11 @@ if [[ ${AWS_S3_REPO} == true ]]; then
 fi
 
 if [[ ${GCS_REPO} == true ]]; then
-  if [[ ! -z "${GCP_SERVICE_ACCOUNT_KEY}" ]]; then
-    echo ${GCP_SERVICE_ACCOUNT_KEY} > $TMPDIR/service_account_key.json
+  if [[ -n "${GCP_SERVICE_ACCOUNT_KEY}" ]]; then
+    echo "${GCP_SERVICE_ACCOUNT_KEY}" > $TMPDIR/service_account_key.json
     export GOOGLE_APPLICATION_CREDENTIALS="$TMPDIR/service_account_key.json"
   fi
-  if [[ ! -z "${GCP_PROJECT_ID}" ]]; then
+  if [[ -n "${GCP_PROJECT_ID}" ]]; then
     export GCP_PROJECT="${GCP_PROJECT_ID}"
   fi
 
@@ -72,7 +72,7 @@ function validate {
   # Run kustomize build
   if [ -f "${DIR}/kustomization.yaml" ] || [ -f "${DIR}/kustomization.yml" ]; then
     TMPDIR=$(mktemp -d)
-    kustomize build ${DIR} -o ${TMPDIR}
+    kustomize build "${DIR}" -o "${TMPDIR}"
     DIR=${TMPDIR}
   fi
 
