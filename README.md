@@ -76,7 +76,7 @@ PASS - flagger/templates/deployment.yaml contains a valid Deployment
 
 ## Usage with private charts repositories
 
-To allow the action to be able to clone private charts repositories, you must [create a GitHub private access token](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line) 
+To allow the action to be able to clone private charts repositories, you must [create a GitHub private access token](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line)
 and [add it as a secret](https://help.github.com/en/actions/automating-your-workflow-with-github-actions/creating-and-using-encrypted-secrets#creating-encrypted-secrets) to the target repository. NOTE: secret names *cannot* start with `GITHUB_` as these are reserved.
 
 You can then pass the secret (in this case, `GH_TOKEN`) into the action like so:
