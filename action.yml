@@ -45,3 +45,5 @@ runs:
     - ${{ inputs.awsS3RepoName }}
     - ${{ inputs.awsS3RepoPlugin }}
     - ${{ inputs.helmSourcesCacheEnabled }}
+  env:
+    HTTP_PRIVATE_CHART_REPOS: ${{ secrets.HTTP_PRIVATE_CHART_REPOS }}

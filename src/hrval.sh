@@ -33,13 +33,34 @@ function download {
 
   CHART_REPO_MD5=$(/bin/echo "${CHART_REPO}" | /usr/bin/md5sum | cut -f1 -d" ")
 
-  if [[ "${HELM_VER}" == "v3" ]]; then
-    helmv3 repo add "${CHART_REPO_MD5}" "${CHART_REPO}"
-    helmv3 repo update
+
+  if [[ ${HELM_VER} == "v3" ]]; then
+    if [[ $(helmv3 repo list -o yaml  | yq r - "[*].name" | grep $CHART_REPO_MD5) == $CHART_REPO_MD5 ]]; then
+      CHART_REPO_ALREADY_ADDED=true
+    else
+      CHART_REPO_ALREADY_ADDED=false
+    fi
+  else
+    if [[ $(helm repo list -o yaml  | yq r - "[*].Name" | grep $CHART_REPO_MD5) == $CHART_REPO_MD5 ]]; then
+      CHART_REPO_ALREADY_ADDED=true
+    else
+      CHART_REPO_ALREADY_ADDED=false
+    fi
+  fi
+
+  if [[ "$CHART_REPO_ALREADY_ADDED" = false ]]; then
+    if [[ "${HELM_VER}" == "v3" ]]; then
+      helmv3 repo add "${CHART_REPO_MD5}" "${CHART_REPO}"
+      helmv3 repo update
+    else
+      helm repo add "${CHART_REPO_MD5}" "${CHART_REPO}"
+      helm repo update
+    fi
+  fi
+
+  if [[ ${HELM_VER} == "v3" ]]; then
     helmv3 fetch --version "${CHART_VERSION}" --untar "${CHART_REPO_MD5}/${CHART_NAME}" --untardir "${2}"
   else
-    helm repo add "${CHART_REPO_MD5}" "${CHART_REPO}"
-    helm repo update
     helm fetch --version "${CHART_VERSION}" --untar "${CHART_REPO_MD5}/${CHART_NAME}" --untardir "${2}"
   fi
 
@@ -168,7 +189,7 @@ function validate {
   HELM_RELEASE_NAMESPACE=$(yq r "${HELM_RELEASE}" metadata.namespace)
 
   if [[ "${IGNORE_VALUES}" == "true" ]]; then
-    echo "Ingnoring Helm release values"
+    echo "Ignoring Helm release values"
     echo "" > "${TMPDIR}/${HELM_RELEASE_NAME}.values.yaml"
   else
     echo "Extracting values to ${TMPDIR}/${HELM_RELEASE_NAME}.values.yaml"
