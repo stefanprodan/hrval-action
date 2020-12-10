@@ -132,7 +132,7 @@ jobs:
 
 ### HTTP(S) Helm chart repository
 
-To allow fetching Helm charts from private Helm chart repositories you need to 
+To allow fetching Helm charts from private Helm chart repositories you need to
 pass a list of Helm repositories in `HTTP_PRIVATE_CHART_REPOS` environment variable as JSON.
 
 ```json
