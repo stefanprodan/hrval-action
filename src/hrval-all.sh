@@ -14,15 +14,21 @@ HELM_SOURCES_CACHE_ENABLED=${8-""}
 
 function configurePrivateChartRepositories() {
 
-  local tempDir="$(mktemp -d)"
-  echo $HTTP_PRIVATE_CHART_REPOS > $tempDir/repositories.json
-  local numberOfRepositories=$(yq r $tempDir/repositories.json --length repositories)
+  local tempDir
+  tempDir="$(mktemp -d)"
+  echo "$HTTP_PRIVATE_CHART_REPOS" > "$tempDir/repositories.json"
+  local numberOfRepositories
+  numberOfRepositories=$(yq r "$tempDir/repositories.json" --length repositories)
 
-  for (( i = 0; i < $numberOfRepositories; i++ )); do
-      local url=$(yq r $tempDir/repositories.json repositories[$i].url)
-      local username=$(yq r $tempDir/repositories.json repositories[$i].username)
-      local password=$(yq r $tempDir/repositories.json repositories[$i].password)
-      local repoMD5=$(/bin/echo $url | /usr/bin/md5sum | cut -f1 -d" ")
+  for (( i = 0; i < numberOfRepositories; i++ )); do
+      local url
+      url=$(yq r "$tempDir/repositories.json" repositories[$i].url)
+      local username
+      username=$(yq r "$tempDir/repositories.json" repositories[$i].username)
+      local password
+      password=$(yq r "$tempDir/repositories.json" repositories[$i].password)
+      local repoMD5
+      repoMD5=$(/bin/echo "$url" | /usr/bin/md5sum | cut -f1 -d" ")
 
       >&2 echo "Adding Helm chart repository '$url'"
       if [[ ${HELM_VER} == "v3" ]]; then

@@ -35,13 +35,13 @@ function download {
 
 
   if [[ ${HELM_VER} == "v3" ]]; then
-    if [[ $(helmv3 repo list -o yaml  | yq r - "[*].name" | grep $CHART_REPO_MD5) == $CHART_REPO_MD5 ]]; then
+    if [[ $(helmv3 repo list -o yaml  | yq r - "[*].name" | grep "$CHART_REPO_MD5") == "$CHART_REPO_MD5" ]]; then
       CHART_REPO_ALREADY_ADDED=true
     else
       CHART_REPO_ALREADY_ADDED=false
     fi
   else
-    if [[ $(helm repo list -o yaml  | yq r - "[*].Name" | grep $CHART_REPO_MD5) == $CHART_REPO_MD5 ]]; then
+    if [[ $(helm repo list -o yaml  | yq r - "[*].Name" | grep "$CHART_REPO_MD5") == "$CHART_REPO_MD5" ]]; then
       CHART_REPO_ALREADY_ADDED=true
     else
       CHART_REPO_ALREADY_ADDED=false
