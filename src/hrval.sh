@@ -211,20 +211,20 @@ function validate {
     if [[ "${CHART_PATH}" ]]; then
       helmv3 dependency build "${CHART_DIR}"
     fi
+    # shellcheck disable=SC2086
     helmv3 template "${HELM_RELEASE_NAME}" "${CHART_DIR}" \
       --namespace "${HELM_RELEASE_NAMESPACE}" \
       --skip-crds=true \
-      "${ADDITIONAL_VALUES_FILES_PARAM}" \
-      -f "${TMPDIR}/${HELM_RELEASE_NAME}.values.yaml" > "${TMPDIR}/${HELM_RELEASE_NAME}.release.yaml"
+      ${ADDITIONAL_VALUES_FILES_PARAM} -f "${TMPDIR}/${HELM_RELEASE_NAME}.values.yaml" > "${TMPDIR}/${HELM_RELEASE_NAME}.release.yaml"
   else
     if [[ "${CHART_PATH}" ]]; then
       helm dependency build "${CHART_DIR}"
     fi
+    # shellcheck disable=SC2086
     helm template "${CHART_DIR}" \
       --name "${HELM_RELEASE_NAME}" \
       --namespace "${HELM_RELEASE_NAMESPACE}" \
-      "${ADDITIONAL_VALUES_FILES_PARAM}" \
-      -f "${TMPDIR}/${HELM_RELEASE_NAME}.values.yaml" > "${TMPDIR}/${HELM_RELEASE_NAME}.release.yaml"
+      ${ADDITIONAL_VALUES_FILES_PARAM} -f "${TMPDIR}/${HELM_RELEASE_NAME}.values.yaml" > "${TMPDIR}/${HELM_RELEASE_NAME}.release.yaml"
   fi
 
   echo "Validating Helm release ${HELM_RELEASE_NAME}.${HELM_RELEASE_NAMESPACE} against Kubernetes ${KUBE_VER}"
