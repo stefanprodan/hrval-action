@@ -76,7 +76,8 @@ PASS - flagger/templates/deployment.yaml contains a valid Deployment
 
 ## Usage with private charts repositories
 
-To allow the action to be able to clone private charts repositories, you must [create a GitHub private access token](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line) and [add it as a secret](https://help.github.com/en/actions/automating-your-workflow-with-github-actions/creating-and-using-encrypted-secrets#creating-encrypted-secrets) to the target repository. NOTE: secret names *cannot* start with `GITHUB_` as these are reserved.
+To allow the action to be able to clone private charts repositories, you must [create a GitHub private access token](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line)
+and [add it as a secret](https://help.github.com/en/actions/automating-your-workflow-with-github-actions/creating-and-using-encrypted-secrets#creating-encrypted-secrets) to the target repository. NOTE: secret names *cannot* start with `GITHUB_` as these are reserved.
 
 You can then pass the secret (in this case, `GH_TOKEN`) into the action like so:
 ```yaml
@@ -120,6 +121,30 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: "us-east-1"
+
+```
+
+If you set `gcsRepo: true`,  make sure you set the appropriate environment variables for helm gcs plugin to work.  Example:
+```yaml
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  hrval:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Validate Helm Releases in test dir
+        uses: stefanprodan/hrval-action@master
+        with:
+          helmRelease: test
+          helmVersion: v3
+          gcsRepo: true
+          helmSourcesCacheEnabled: true
+        env:
+          GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+          GCP_SERVICE_ACCOUNT_KEY: ${{ secrets.GCP_SA_KEY }}
 
 ```
 

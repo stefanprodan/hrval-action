@@ -11,3 +11,9 @@ helm init --client-only --kubeconfig="${HOME}/.kube/kubeconfig"
 
 curl -sSL https://get.helm.sh/helm-v3.1.1-linux-amd64.tar.gz | tar xz && mv linux-amd64/helm /bin/helmv3 && rm -rf linux-amd64
 helmv3 version
+
+KUSTOMIZE=3.5.5
+echo "downloading kustomize ${KUSTOMIZE}"
+curl -sL https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv${KUSTOMIZE}/kustomize_v${KUSTOMIZE}_linux_amd64.tar.gz | \
+tar xz && mv kustomize /usr/local/bin/kustomize
+kustomize version
