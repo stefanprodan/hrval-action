@@ -32,8 +32,9 @@ jobs:
         uses: ./
         with:
           helmRelease: test/
+          valuesFromDir: test/valuesfrom
       - name: Check tested file count
         env:
           NUM_FILES_TESTED: ${{ steps.validate-dir.outputs.numFilesTested }}
-        run: "(( NUM_FILES_TESTED==3 ))"
+        run: "(( NUM_FILES_TESTED==4 ))"
 

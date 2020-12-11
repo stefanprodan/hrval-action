@@ -227,6 +227,30 @@ jobs:
           helmSourcesCacheEnabled: true
 ```
 
+## Injecting "valuesFrom"
+
+Validation supports [HelmReleases using "valuesFrom"](https://docs.fluxcd.io/projects/helm-operator/en/stable/helmrelease-guide/values/#values-from-sources) 
+with "secretKeyRef" or "configMapKeyRef".
+To use this feature, you need to keep configMaps and secrets used by "valuesFrom" in the repository.
+To enable it - pass a property named `valuesFromDir` pointing to the directory with configMaps and secrets.
+
+```yaml
+name: CI
+
+on: [pull_request]
+
+jobs:
+  hrval:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Validate Helm Releases in test dir
+        uses: stefanprodan/hrval-action@master
+        with:
+          helmRelease: test/
+          valuesFromDir: test/valuesfrom/
+```
+
 
 ## CI alternatives
 
