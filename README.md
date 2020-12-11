@@ -229,7 +229,7 @@ jobs:
 
 ## Injecting "valuesFrom"
 
-Validation supports [HelmReleases using "valuesFrom"](https://docs.fluxcd.io/projects/helm-operator/en/stable/helmrelease-guide/values/#values-from-sources) 
+Validation supports [HelmReleases using "valuesFrom"](https://docs.fluxcd.io/projects/helm-operator/en/stable/helmrelease-guide/values/#values-from-sources)
 with "secretKeyRef" or "configMapKeyRef".
 To use this feature, you need to keep configMaps and secrets used by "valuesFrom" in the repository.
 To enable it - pass a property named `valuesFromDir` pointing to the directory with configMaps and secrets.
