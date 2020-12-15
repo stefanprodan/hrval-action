@@ -76,7 +76,10 @@ PASS - flagger/templates/deployment.yaml contains a valid Deployment
 
 ## Usage with private charts repositories
 
-To allow the action to be able to clone private charts repositories, you must [create a GitHub private access token](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line) and [add it as a secret](https://help.github.com/en/actions/automating-your-workflow-with-github-actions/creating-and-using-encrypted-secrets#creating-encrypted-secrets) to the target repository. NOTE: secret names *cannot* start with `GITHUB_` as these are reserved.
+### Private GitHub/GitLab repository
+To allow the action to be able to clone charts from private GitHub repositories,
+you must [create a GitHub private access token](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line)
+and [add it as a secret](https://help.github.com/en/actions/automating-your-workflow-with-github-actions/creating-and-using-encrypted-secrets#creating-encrypted-secrets) to the target repository. NOTE: secret names *cannot* start with `GITHUB_` as these are reserved.
 
 You can then pass the secret (in this case, `GH_TOKEN`) into the action like so:
 ```yaml
@@ -96,6 +99,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
 ```
+
+Gitlab CI Token is also possible using `GITLAB_CI_TOKEN`.
+
+### AWS S3
 
 If you set `awsS3Repo: true`,  make sure you set the appropriate environment variables for helm s3 plugin to work.  Example:
 ```yaml
@@ -123,7 +130,49 @@ jobs:
 
 ```
 
-Gitlab CI Token is also possible using `GITLAB_CI_TOKEN`.
+### HTTP(S) Helm chart repository
+
+To allow fetching Helm charts from private Helm chart repositories you need to
+pass a list of Helm repositories in `HTTP_PRIVATE_CHART_REPOS` environment variable as JSON.
+
+```json
+{
+  "repositories": [
+    {
+      "url": "https://raw.githubusercontent.com/username/helm-chart-repository/master/",
+      "username": "YOUR_USERNAME",
+      "password": "YOUR_PASSWORD"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/username/another-helm-chart-repository/master/",
+      "username": "YOUR_USERNAME",
+      "password": "YOUR_PASSWORD"
+    }
+  ]
+}
+```
+
+It should be passed [as a secret](https://docs.github.com/en/free-pro-team@latest/actions/reference/encrypted-secrets#creating-encrypted-secrets)
+to keep credentials secure.
+
+```yaml
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  hrval:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Validate Helm Releases in test dir
+        uses: stefanprodan/hrval-action@master
+        with:
+          helmRelease: test/
+        env:
+          HTTP_PRIVATE_CHART_REPOS: ${{ secrets.HTTP_PRIVATE_CHART_REPOS }}
+```
+
 
 ## Usage with pull requests containing changes of Helm chart source located in base repository branch
 

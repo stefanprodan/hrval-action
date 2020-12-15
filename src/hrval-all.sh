@@ -12,6 +12,40 @@ AWS_S3_REPO_NAME=${6-""}
 AWS_S3_PLUGIN="${7-""}"
 HELM_SOURCES_CACHE_ENABLED=${8-""}
 
+function configurePrivateChartRepositories() {
+
+  local tempDir
+  tempDir="$(mktemp -d)"
+  echo "$HTTP_PRIVATE_CHART_REPOS" > "$tempDir/repositories.json"
+  local numberOfRepositories
+  numberOfRepositories=$(yq r "$tempDir/repositories.json" --length repositories)
+
+  for (( i = 0; i < numberOfRepositories; i++ )); do
+      local url
+      url=$(yq r "$tempDir/repositories.json" repositories[$i].url)
+      local username
+      username=$(yq r "$tempDir/repositories.json" repositories[$i].username)
+      local password
+      password=$(yq r "$tempDir/repositories.json" repositories[$i].password)
+      local repoMD5
+      repoMD5=$(/bin/echo "$url" | /usr/bin/md5sum | cut -f1 -d" ")
+
+      >&2 echo "Adding Helm chart repository '$url'"
+      if [[ ${HELM_VER} == "v3" ]]; then
+        helmv3 repo add "$repoMD5" "${url}" --username "${username}" --password "${password}"
+        helmv3 repo update
+      else
+        helm repo add "$repoMD5" "${url}" --username "${username}" --password "${password}"
+        helm repo update
+      fi
+  done
+}
+
+if [[ -v HTTP_PRIVATE_CHART_REPOS ]]; then
+  echo "Configuring Helm chart repositories"
+  configurePrivateChartRepositories
+fi
+
 if [ "${HELM_SOURCES_CACHE_ENABLED}" == "true" ]; then
   CACHEDIR=$(mktemp -d)
 else
