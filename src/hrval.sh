@@ -7,6 +7,7 @@ IGNORE_VALUES="${2}"
 KUBE_VER="${3-master}"
 HELM_VER="${4-v2}"
 CACHEDIR="${5-""}"
+VALUES_FROM_DIR="${6-""}"
 
 if test ! -f "${HELM_RELEASE}"; then
   echo "\"${HELM_RELEASE}\" Helm release file not found!"
@@ -174,6 +175,10 @@ function retrieve_sources {
     echo "${CHART_DIR}"
 }
 
+function valuesFromFiles {
+  local tmpDir=${1}
+  valuesfrom "${HELM_RELEASE}" "${VALUES_FROM_DIR}" "${tmpDir}"
+}
 
 function validate {
   if [[ $(isHelmRelease "${HELM_RELEASE}") == "false" ]]; then
@@ -194,6 +199,11 @@ function validate {
   else
     echo "Extracting values to ${TMPDIR}/${HELM_RELEASE_NAME}.values.yaml"
     yq r -X "${HELM_RELEASE}" spec.values > "${TMPDIR}/${HELM_RELEASE_NAME}.values.yaml"
+
+    if [[ -n $VALUES_FROM_DIR ]]; then
+      ADDITIONAL_VALUES_FILES_PARAM=$(valuesFromFiles "${TMPDIR}")
+      echo "Additional values files parameters are: ${ADDITIONAL_VALUES_FILES_PARAM}"
+    fi
   fi
 
   echo "Writing Helm release to ${TMPDIR}/${HELM_RELEASE_NAME}.release.yaml"
@@ -201,18 +211,20 @@ function validate {
     if [[ "${CHART_PATH}" ]]; then
       helmv3 dependency build "${CHART_DIR}"
     fi
+    # shellcheck disable=SC2086
     helmv3 template "${HELM_RELEASE_NAME}" "${CHART_DIR}" \
       --namespace "${HELM_RELEASE_NAMESPACE}" \
       --skip-crds=true \
-      -f "${TMPDIR}/${HELM_RELEASE_NAME}.values.yaml" > "${TMPDIR}/${HELM_RELEASE_NAME}.release.yaml"
+      ${ADDITIONAL_VALUES_FILES_PARAM} -f "${TMPDIR}/${HELM_RELEASE_NAME}.values.yaml" > "${TMPDIR}/${HELM_RELEASE_NAME}.release.yaml"
   else
     if [[ "${CHART_PATH}" ]]; then
       helm dependency build "${CHART_DIR}"
     fi
+    # shellcheck disable=SC2086
     helm template "${CHART_DIR}" \
       --name "${HELM_RELEASE_NAME}" \
       --namespace "${HELM_RELEASE_NAMESPACE}" \
-      -f "${TMPDIR}/${HELM_RELEASE_NAME}.values.yaml" > "${TMPDIR}/${HELM_RELEASE_NAME}.release.yaml"
+      ${ADDITIONAL_VALUES_FILES_PARAM} -f "${TMPDIR}/${HELM_RELEASE_NAME}.values.yaml" > "${TMPDIR}/${HELM_RELEASE_NAME}.release.yaml"
   fi
 
   echo "Validating Helm release ${HELM_RELEASE_NAME}.${HELM_RELEASE_NAMESPACE} against Kubernetes ${KUBE_VER}"

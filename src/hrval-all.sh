@@ -11,6 +11,7 @@ AWS_S3_REPO=${5-false}
 AWS_S3_REPO_NAME=${6-""}
 AWS_S3_PLUGIN="${7-""}"
 HELM_SOURCES_CACHE_ENABLED=${8-""}
+VALUES_FROM_DIR=${9-""}
 
 function configurePrivateChartRepositories() {
 
@@ -64,7 +65,7 @@ fi
 
 # If the path provided is actually a file, just run hrval against this one file
 if test -f "${DIR}"; then
-  ${HRVAL} "${DIR}" "${IGNORE_VALUES}" "${KUBE_VER}" "${HELM_VER}" "${CACHEDIR}"
+  ${HRVAL} "${DIR}" "${IGNORE_VALUES}" "${KUBE_VER}" "${HELM_VER}" "${CACHEDIR}" "${VALUES_FROM_DIR}"
   exit 0
 fi
 
@@ -92,7 +93,7 @@ done < <(find "${DIR}" -type f -name '*.yaml' -o -name '*.yml')
 
 for f in "${FOUND_FILES[@]}"; do
   if [[ $(isHelmRelease "${f}") == "true" ]]; then
-    ${HRVAL} "${f}" "${IGNORE_VALUES}" "${KUBE_VER}" "${HELM_VER}" "${CACHEDIR}"
+    ${HRVAL} "${f}" "${IGNORE_VALUES}" "${KUBE_VER}" "${HELM_VER}" "${CACHEDIR}" "${VALUES_FROM_DIR}"
     FILES_TESTED=$(( FILES_TESTED+1 ))
   else
     echo "Ignoring ${f} not a HelmRelease"

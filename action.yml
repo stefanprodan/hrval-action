@@ -29,6 +29,11 @@ inputs:
   helmSourcesCacheEnabled:
     description: '(Optional) Enabled Helm source caching, so same release or ref will not be downloaded twice.'
     default: 'false'
+  valuesFromDir:
+    description: '(Optional) Path to directory with configMaps and secrets used in HelmRelease with valuesFrom'
+    required: false
+    default: ''
+
 outputs:
   numFilesTested:
     description: The number of HelmRelease files which were tested
@@ -45,3 +50,4 @@ runs:
     - ${{ inputs.awsS3RepoName }}
     - ${{ inputs.awsS3RepoPlugin }}
     - ${{ inputs.helmSourcesCacheEnabled }}
+    - ${{ inputs.valuesFromDir }}

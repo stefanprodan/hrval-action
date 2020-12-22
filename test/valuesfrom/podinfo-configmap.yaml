@@ -1,0 +1,23 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: podinfo-values1
+  annotations:
+    fluxcd.io/ignore: "true"
+data:
+  values.yaml: |
+    message: "Greetings message"
+    backend: "http://backend"
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: podinfo-values2
+  annotations:
+    fluxcd.io/ignore: "true"
+data:
+  values.yaml: |
+    additonalMessage: "Hi there"
+    frontend: "http://frontend"
