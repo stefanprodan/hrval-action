@@ -53,7 +53,7 @@ else
 fi
 
 if [[ ${HELM_VER} == "v2" ]]; then
-    helm init --client-only
+    helm init --client-only --stable-repo-url=https://charts.helm.sh/stable
 fi
 
 if [[ ${AWS_S3_REPO} == true ]]; then
