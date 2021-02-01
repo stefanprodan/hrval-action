@@ -50,9 +50,13 @@ function download {
 
   if [[ "$CHART_REPO_ALREADY_ADDED" = false ]]; then
     if [[ "${HELM_VER}" == "v3" ]]; then
+      helmv3 repo rm stable
+      helmv3 repo add stable https://charts.helm.sh/stable
       helmv3 repo add "${CHART_REPO_MD5}" "${CHART_REPO}"
       helmv3 repo update
     else
+      helm repo rm stable
+      helm repo add stable https://charts.helm.sh/stable
       helm repo add "${CHART_REPO_MD5}" "${CHART_REPO}"
       helm repo update
     fi
