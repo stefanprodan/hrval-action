@@ -181,6 +181,7 @@ function validate {
       helmv3 dependency build "${CHART_DIR}"
     fi
     helmv3 template "${HELM_RELEASE_NAME}" "${CHART_DIR}" \
+      --kube-version "${KUBE_VER}" \
       --namespace "${HELM_RELEASE_NAMESPACE}" \
       --skip-crds=true \
       -f "${TMPDIR}/${HELM_RELEASE_NAME}.values.yaml" > "${TMPDIR}/${HELM_RELEASE_NAME}.release.yaml"
